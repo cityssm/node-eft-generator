@@ -1,0 +1,39 @@
+{
+  "name": "@cityssm/eft-generator",
+  "version": "0.1.0",
+  "type": "module",
+  "engines": {
+    "node": "^14.13.1 || >=16.0.0"
+  },
+  "description": "Formats Electronic Funds Transfer (EFT) data into the CPA 005 standard.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha",
+    "coverage": "c8 mocha"
+  },
+  "keywords": [
+    "banking",
+    "eft",
+    "electronic-funds-transfer",
+    "cpa-005"
+  ],
+  "author": "The Corporation of the City of Sault Ste. Marie",
+  "license": "MIT",
+  "homepage": "https://github.com/cityssm/node-eft-generator#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cityssm/node-eft-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cityssm/node-eft-generator/issues"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^20.6.3",
+    "eslint": "^8.49.0",
+    "eslint-config-cityssm": "^0.4.0"
+  },
+  "dependencies": {
+    "@cityssm/modern-julian-date": "^0.1.0"
+  }
+}
