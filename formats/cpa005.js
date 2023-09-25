@@ -1,21 +1,72 @@
 import { toModernJulianDate } from '@cityssm/modern-julian-date';
+import Debug from 'debug';
+import { CPA_CODES } from '../index.js';
+const debug = Debug('eft-generator:cpa005');
 function toJulianDate(date) {
     return '0' + toModernJulianDate(date).toString().slice(2);
 }
-function formatHeader(eftHeader) {
-    const fileCreationJulianDate = toJulianDate(eftHeader.fileCreationDate ?? new Date());
+function validateConfig(eftConfig) {
+    let warningCount = 0;
+    if (eftConfig.originatorShortName === undefined) {
+        debug('originatorShortName not defined, using originatorLongName.');
+        warningCount += 1;
+        eftConfig.originatorShortName = eftConfig.originatorLongName;
+    }
+    if (eftConfig.originatorShortName.length > 15) {
+        debug(`originatorShortName will be truncated: ${eftConfig.originatorShortName}`);
+        warningCount += 1;
+    }
+    if (eftConfig.originatorLongName.length > 30) {
+        debug(`originatorLongName will be truncated: ${eftConfig.originatorLongName}`);
+        warningCount += 1;
+    }
+    return warningCount;
+}
+function validateTransactions(eftTransactions) {
+    let warningCount = 0;
+    const cpaCodeNumbers = Object.values(CPA_CODES);
+    for (const transaction of eftTransactions) {
+        if (transaction.segments.length === 0) {
+            debug('Transaction record has no segments, will be ignored.');
+            warningCount += 1;
+        }
+        for (const segment of transaction.segments) {
+            if (!cpaCodeNumbers.includes(segment.cpaCode)) {
+                debug(`Unknown CPA code: ${segment.cpaCode}`);
+                warningCount += 1;
+            }
+            if (segment.amount <= 0) {
+                throw new Error(`Segment amount less than or equal to zero: ${segment.amount}`);
+            }
+            if (segment.amount >= 100000000) {
+                throw new Error(`Segment amount exceeds $100,000,000: ${segment.amount}`);
+            }
+            if (segment.payeeName.length > 30) {
+                debug(`payeeName will be truncated: ${segment.payeeName}`);
+                warningCount += 1;
+            }
+        }
+    }
+    return warningCount;
+}
+export function validateCPA005(eftGenerator) {
+    return (validateConfig(eftGenerator.getConfiguration()) +
+        validateTransactions(eftGenerator.getTransactions()));
+}
+function formatHeader(eftConfig) {
+    const fileCreationJulianDate = toJulianDate(eftConfig.fileCreationDate ?? new Date());
     let dataCentre = ''.padEnd(5, ' ');
-    if (eftHeader.destinationDataCentre !== undefined) {
-        dataCentre = eftHeader.destinationDataCentre.padStart(5, '0');
+    if (eftConfig.destinationDataCentre !== undefined) {
+        dataCentre = eftConfig.destinationDataCentre.padStart(5, '0');
     }
     let destinationCurrency = ''.padEnd(3, ' ');
-    if (eftHeader.destinationCurrency !== undefined) {
-        destinationCurrency = eftHeader.destinationCurrency;
+    if (eftConfig.destinationCurrency !== undefined) {
+        destinationCurrency = eftConfig.destinationCurrency;
     }
     return ('A' +
         '1'.padStart(9, '0') +
-        eftHeader.originatorId.padEnd(10, ' ') +
-        eftHeader.fileCreationNumber.padStart(4, '0').slice(-4) +
+        eftConfig.originatorId.padEnd(10, ' ') +
+        eftConfig.fileCreationNumber.padStart(4, '0').slice(-4) +
         fileCreationJulianDate +
         dataCentre +
         ''.padEnd(20, ' ') +
@@ -23,8 +74,13 @@ function formatHeader(eftHeader) {
         ''.padEnd(1406, ' '));
 }
 export function formatToCPA005(eftGenerator) {
+    const warningCount = validateCPA005(eftGenerator);
+    if (warningCount > 0) {
+        debug(`Proceeding with ${warningCount} warnings.`);
+    }
+    const eftConfig = eftGenerator.getConfiguration();
     const outputLines = [];
-    outputLines.push(formatHeader(eftGenerator._header));
+    outputLines.push(formatHeader(eftConfig));
     let recordCount = 1;
     let record = '';
     let totalValueDebits = 0;
@@ -32,6 +88,7 @@ export function formatToCPA005(eftGenerator) {
     let totalValueCredits = 0;
     let totalNumberCredits = 0;
     for (const transaction of eftGenerator.getTransactions()) {
+        record = '';
         for (let segmentIndex = 0; segmentIndex < transaction.segments.length; segmentIndex += 1) {
             if (segmentIndex % 6 === 0) {
                 if (segmentIndex > 0) {
@@ -47,8 +104,8 @@ export function formatToCPA005(eftGenerator) {
                 record =
                     transaction.recordType +
                         recordCount.toString().padStart(9, '0') +
-                        eftGenerator._header.originatorId.padEnd(10, ' ') +
-                        eftGenerator._header.fileCreationNumber.padStart(4, '0');
+                        eftConfig.originatorId.padEnd(10, ' ') +
+                        eftConfig.fileCreationNumber.padStart(4, '0');
             }
             const segment = transaction.segments[segmentIndex];
             const paymentJulianDate = toJulianDate(segment.paymentDate ?? new Date());
@@ -56,12 +113,13 @@ export function formatToCPA005(eftGenerator) {
             if (crossReferenceNumber === undefined) {
                 crossReferenceNumber =
                     'f' +
-                        eftGenerator._header.fileCreationNumber +
+                        eftConfig.fileCreationNumber +
                         'r' +
                         recordCount.toString() +
                         's' +
                         (segmentIndex + 1).toString();
             }
+            const originatorShortName = eftConfig.originatorShortName ?? eftConfig.originatorLongName;
             record +=
                 segment.cpaCode.toString() +
                     Math.round(segment.amount * 100)
@@ -74,10 +132,10 @@ export function formatToCPA005(eftGenerator) {
                     segment.bankAccountNumber.padEnd(12, ' ') +
                     ''.padStart(22, '0') +
                     ''.padStart(3, '0') +
-                    eftGenerator._defaults.originatorShortName.padEnd(15, ' ').slice(0, 15) +
+                    originatorShortName.padEnd(15, ' ').slice(0, 15) +
                     segment.payeeName.padEnd(30, ' ').slice(0, 30) +
-                    eftGenerator._defaults.originatorLongName.padEnd(30, ' ').slice(0, 30) +
-                    eftGenerator._header.originatorId.padEnd(10, ' ') +
+                    eftConfig.originatorLongName.padEnd(30, ' ').slice(0, 30) +
+                    eftConfig.originatorId.padEnd(10, ' ') +
                     crossReferenceNumber.padEnd(19, ' ').slice(0, 19) +
                     ''.padStart(1, '0') +
                     ''.padEnd(12, ' ') +
@@ -92,12 +150,14 @@ export function formatToCPA005(eftGenerator) {
                 totalValueDebits += segment.amount;
             }
         }
-        outputLines.push(record.padEnd(1464, ' '));
+        if (record !== '') {
+            outputLines.push(record.padEnd(1464, ' '));
+        }
     }
     const trailer = 'Z' +
         (recordCount + 1).toString().padStart(9, '0') +
-        eftGenerator._header.originatorId.padEnd(10, ' ') +
-        eftGenerator._header.fileCreationNumber.padStart(4, '0').slice(-4) +
+        eftConfig.originatorId.padEnd(10, ' ') +
+        eftConfig.fileCreationNumber.padStart(4, '0').slice(-4) +
         Math.round(totalValueDebits * 100)
             .toString()
             .padStart(14, '0') +

@@ -7,6 +7,7 @@
 Formats Electronic Funds Transfer (EFT) data into the CPA 005 standard.
 
 Supports credit (C) and debit (D) record types.
+Other logical record types are not supported.
 
 ## Installation
 
@@ -18,24 +19,20 @@ npm install @cityssm/eft-generator
 
 ```javascript
 import fs from 'node:fs'
-import { EFTGenerator, cpaCodes } from '@cityssm/eft-generator'
+import { EFTGenerator, CPA_CODES } from '@cityssm/eft-generator'
 
 const eftGenerator = new EFTGenerator({
   originatorId: '0123456789',
+  originatorShortName: 'SSM',
+  originatorLongName: 'The City of Sault Ste. Marie',
   fileCreationNumber: '0001'
 })
-
-eftGenerator.setDefault('originatorShortName', 'SSM')
-eftGenerator.setDefault(
-  'originatorLongName',
-  'The City of Sault Ste. Marie'
-)
 
 eftGenerator.addDebitTransaction({
   bankInstitutionNumber: '111',
   bankTransitNumber: '22222',
   bankAccountNumber: '333333333',
-  cpaCode: cpaCodes.PropertyTaxes,
+  cpaCode: CPA_CODES.PropertyTaxes,
   amount: 1234.56,
   payeeName: 'Test Property Owner'
 })
@@ -47,4 +44,5 @@ fs.writeFileSync('cpa005.txt', output)
 
 ## Resources
 
+- [Canadian Payments Association Standard 005](https://www.payments.ca/sites/default/files/standard005eng.pdf)
 - [Royal Bank CPA-005 Reference](https://www.rbcroyalbank.com/ach/file-451771.pdf)

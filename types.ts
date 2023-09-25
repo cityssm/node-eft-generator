@@ -1,4 +1,4 @@
-export interface EFTHeader {
+export interface EFTConfiguration {
   /**
    * Also known as
    * - Client Number
@@ -6,6 +6,9 @@ export interface EFTHeader {
    * - Customer Number
    */
   originatorId: string
+
+  originatorShortName?: string
+  originatorLongName: string
 
   /**
    * Four digit number.

@@ -1,22 +1,13 @@
-import { formatToCPA005 } from './formats/cpa005.js';
+import { formatToCPA005, validateCPA005 } from './formats/cpa005.js';
 export class EFTGenerator {
-    _header;
+    #config;
     #transactions;
-    _defaults = {
-        originatorShortName: '',
-        originatorLongName: ''
-    };
-    constructor(header) {
-        if (header !== undefined) {
-            this.setHeader(header);
-        }
+    constructor(config) {
+        this.#config = config;
         this.#transactions = [];
     }
-    setHeader(header) {
-        this._header = header;
-    }
-    setDefault(defaultName, defaultValue) {
-        this._defaults[defaultName] = defaultValue;
+    getConfiguration() {
+        return this.#config;
     }
     addTransaction(transaction) {
         this.#transactions.push(transaction);
@@ -39,5 +30,14 @@ export class EFTGenerator {
     toCPA005() {
         return formatToCPA005(this);
     }
+    validateCPA005() {
+        try {
+            validateCPA005(this);
+            return true;
+        }
+        catch {
+            return false;
+        }
+    }
 }
-export { cpaCodes } from './cpaCodes.js';
+export { CPA_CODES } from './cpaCodes.js';

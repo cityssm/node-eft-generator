@@ -1,18 +1,14 @@
-import type * as types from './types.js';
+import type { EFTConfiguration, EFTTransaction, EFTTransactionSegment } from './types.js';
 export declare class EFTGenerator {
     #private;
-    _header: types.EFTHeader;
-    _defaults: {
-        originatorShortName: string;
-        originatorLongName: string;
-    };
-    constructor(header?: types.EFTHeader);
-    setHeader(header: types.EFTHeader): void;
-    setDefault(defaultName: keyof typeof this._defaults, defaultValue: string): void;
-    addTransaction(transaction: types.EFTTransaction): void;
-    addCreditTransaction(transactionSegment: types.EFTTransactionSegment): void;
-    addDebitTransaction(transactionSegment: types.EFTTransactionSegment): void;
-    getTransactions(): types.EFTTransaction[];
+    constructor(config: EFTConfiguration);
+    getConfiguration(): EFTConfiguration;
+    addTransaction(transaction: EFTTransaction): void;
+    addCreditTransaction(transactionSegment: EFTTransactionSegment): void;
+    addDebitTransaction(transactionSegment: EFTTransactionSegment): void;
+    getTransactions(): EFTTransaction[];
     toCPA005(): string;
+    validateCPA005(): boolean;
 }
-export { cpaCodes } from './cpaCodes.js';
+export { CPA_CODES } from './cpaCodes.js';
+export type * as types from './types.js';

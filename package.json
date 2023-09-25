@@ -1,6 +1,6 @@
 {
   "name": "@cityssm/eft-generator",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "engines": {
     "node": "^14.13.1 || >=16.0.0"
@@ -8,8 +8,8 @@
   "description": "Formats Electronic Funds Transfer (EFT) data into the CPA 005 standard.",
   "exports": "./index.js",
   "scripts": {
-    "test": "mocha",
-    "coverage": "c8 mocha"
+    "test": "cross-env NODE_ENV=dev DEBUG=eft-generator:* mocha",
+    "coverage": "cross-env NODE_ENV=dev DEBUG=eft-generator:* c8 mocha"
   },
   "keywords": [
     "banking",
@@ -28,12 +28,15 @@
     "url": "https://github.com/cityssm/node-eft-generator/issues"
   },
   "devDependencies": {
+    "@types/debug": "^4.1.9",
     "@types/mocha": "^10.0.1",
-    "@types/node": "^20.6.3",
-    "eslint": "^8.49.0",
+    "@types/node": "^20.6.5",
+    "cross-env": "^7.0.3",
+    "eslint": "^8.50.0",
     "eslint-config-cityssm": "^0.4.0"
   },
   "dependencies": {
-    "@cityssm/modern-julian-date": "^0.1.0"
+    "@cityssm/modern-julian-date": "^0.1.0",
+    "debug": "^4.3.4"
   }
 }

@@ -1,5 +1,7 @@
-export interface EFTHeader {
+export interface EFTConfiguration {
     originatorId: string;
+    originatorShortName?: string;
+    originatorLongName: string;
     fileCreationNumber: string;
     fileCreationDate?: Date;
     destinationDataCentre?: string;

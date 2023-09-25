@@ -1,11 +1,13 @@
 import * as assert from 'node:assert'
 import fs from 'node:fs'
 
-import { EFTGenerator, cpaCodes } from '../index.js'
-import type { EFTHeader, EFTTransaction } from '../types.js'
+import { EFTGenerator, CPA_CODES } from '../index.js'
+import type { EFTConfiguration, EFTTransaction } from '../types.js'
 
-const headerData: EFTHeader = {
+const configData: EFTConfiguration = {
   originatorId: '0123456789',
+  originatorLongName: 'The City of Sault Ste. Marie',
+  originatorShortName: 'SSM',
   fileCreationNumber: '0001'
 }
 
@@ -16,7 +18,7 @@ const transactionData: EFTTransaction = {
       bankInstitutionNumber: '111',
       bankTransitNumber: '22222',
       bankAccountNumber: '333333333',
-      cpaCode: cpaCodes.PropertyTaxes,
+      cpaCode: CPA_CODES.PropertyTaxes,
       amount: 1234.56,
       payeeName: 'Test Property Owner'
     },
@@ -24,7 +26,7 @@ const transactionData: EFTTransaction = {
       bankInstitutionNumber: '222',
       bankTransitNumber: '33333',
       bankAccountNumber: '4444444444',
-      cpaCode: cpaCodes.PropertyTaxes,
+      cpaCode: CPA_CODES.PropertyTaxes,
       amount: 2345.67,
       payeeName: 'Test Property Owner 2'
     }
@@ -33,15 +35,11 @@ const transactionData: EFTTransaction = {
 
 describe('eft-generator', () => {
   it('Creates a CPA-005 formatted output', () => {
-    const eftGenerator = new EFTGenerator(headerData)
-
-    eftGenerator.setDefault('originatorShortName', 'SSM')
-    eftGenerator.setDefault(
-      'originatorLongName',
-      'The City of Sault Ste. Marie'
-    )
+    const eftGenerator = new EFTGenerator(configData)
 
     eftGenerator.addTransaction(transactionData)
+
+    assert.ok(eftGenerator.validateCPA005())
 
     const output = eftGenerator.toCPA005()
 

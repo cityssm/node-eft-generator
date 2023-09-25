@@ -1,4 +1,4 @@
-export const cpaCodes = Object.freeze({
+export const CPA_CODES = Object.freeze({
     PayrollDeposit: 200,
     SpecialPayroll: 201,
     VacationPayroll: 202,

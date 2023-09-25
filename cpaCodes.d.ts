@@ -1,4 +1,4 @@
-export declare const cpaCodes: Readonly<{
+export declare const CPA_CODES: Readonly<{
     PayrollDeposit: 200;
     SpecialPayroll: 201;
     VacationPayroll: 202;
