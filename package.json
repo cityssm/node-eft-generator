@@ -33,7 +33,7 @@
     "@types/node": "^20.6.5",
     "cross-env": "^7.0.3",
     "eslint": "^8.50.0",
-    "eslint-config-cityssm": "^0.4.0"
+    "eslint-config-cityssm": "^0.5.1"
   },
   "dependencies": {
     "@cityssm/modern-julian-date": "^0.1.0",
