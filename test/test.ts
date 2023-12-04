@@ -2,15 +2,18 @@ import * as assert from 'node:assert'
 import fs from 'node:fs'
 
 import { EFTGenerator, CPA_CODES } from '../index.js'
+import type { EFTConfiguration } from '../types.js'
+
+const config: EFTConfiguration = {
+  originatorId: '0123456789',
+  originatorLongName: 'The City of Sault Ste. Marie',
+  originatorShortName: 'SSM',
+  fileCreationNumber: '0001'
+}
 
 describe('eft-generator - CPA-005', () => {
   it('Creates valid CPA-005 formatted output', () => {
-    const eftGenerator = new EFTGenerator({
-      originatorId: '0123456789',
-      originatorLongName: 'The City of Sault Ste. Marie',
-      originatorShortName: 'SSM',
-      fileCreationNumber: '0001'
-    })
+    const eftGenerator = new EFTGenerator(config)
 
     assert.strictEqual(eftGenerator.getTransactions().length, 0)
 
@@ -52,44 +55,189 @@ describe('eft-generator - CPA-005', () => {
     assert.strictEqual(output.charAt(0), 'A')
   })
 
-  it('Throws error when originatorId length is too long.', () => {
-    const eftGenerator = new EFTGenerator({
-      originatorId: '12345678901234567890',
-      originatorLongName: '',
-      fileCreationNumber: '0001'
+  describe('Configuration errors and warnings', () => {
+    it('Throws error when originatorId length is too long.', () => {
+      const eftGenerator = new EFTGenerator({
+        originatorId: '12345678901234567890',
+        originatorLongName: '',
+        fileCreationNumber: '0001'
+      })
+
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch {
+        assert.ok(true)
+      }
     })
 
-    try {
-      eftGenerator.toCPA005()
-      assert.fail()
-    } catch {
-      assert.ok(true)
-    }
+    it('Throws error when fileCreationNumber is invalid.', () => {
+      const eftGenerator = new EFTGenerator({
+        originatorId: '1',
+        originatorLongName: '',
+        fileCreationNumber: 'abcdefg'
+      })
+
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch {
+        assert.ok(true)
+      }
+    })
+
+    it('Warns on missing originatorShortName', () => {
+      const eftGenerator = new EFTGenerator({
+        originatorId: '01',
+        originatorLongName:
+          'This name exceeds the 30 character limit and will be truncated.',
+        fileCreationNumber: '0001'
+      })
+
+      assert.ok(eftGenerator.validateCPA005())
+    })
   })
 
-  it('Throws error when fileCreationNumber is invalid.', () => {
-    const eftGenerator = new EFTGenerator({
-      originatorId: '1',
-      originatorLongName: '',
-      fileCreationNumber: 'abcdefg'
+  describe('Transaction errors and warnings', () => {
+    it('Throws error when a transaction has a negative amount.', () => {
+      const eftGenerator = new EFTGenerator(config)
+
+      eftGenerator.addDebitTransaction({
+        payeeName: 'Negative Amount',
+        amount: -2,
+        bankInstitutionNumber: '1',
+        bankTransitNumber: '1',
+        bankAccountNumber: '1',
+        cpaCode: 1
+      })
+
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch {
+        assert.ok(true)
+      }
     })
 
-    try {
-      eftGenerator.toCPA005()
-      assert.fail()
-    } catch {
-      assert.ok(true)
-    }
-  })
+    it('Throws error when a transaction has too large of an amount', () => {
+      const eftGenerator = new EFTGenerator(config)
 
-  it('Warns on missing originatorShortName', () => {
-    const eftGenerator = new EFTGenerator({
-      originatorId: '01',
-      originatorLongName:
-        'This name exceeds the 30 character limit and will be truncated.',
-      fileCreationNumber: '0001'
+      eftGenerator.addDebitTransaction({
+        payeeName: 'Large Amount',
+        amount: 999_999_999,
+        bankInstitutionNumber: '1',
+        bankTransitNumber: '1',
+        bankAccountNumber: '1',
+        cpaCode: CPA_CODES.Taxes
+      })
+
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch {
+        assert.ok(true)
+      }
     })
 
-    assert.ok(eftGenerator.validateCPA005())
+    it('Throws error when bankInstitutionNumber is invalid', () => {
+      const eftGenerator = new EFTGenerator(config)
+
+      eftGenerator.addDebitTransaction({
+        payeeName: 'Invalid Institution',
+        amount: 100,
+        bankInstitutionNumber: 'abc',
+        bankTransitNumber: '1',
+        bankAccountNumber: '1',
+        cpaCode: CPA_CODES.Taxes
+      })
+
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch {
+        assert.ok(true)
+      }
+    })
+
+    it('Throws error when bankTransitNumber is invalid', () => {
+      const eftGenerator = new EFTGenerator(config)
+
+      eftGenerator.addDebitTransaction({
+        payeeName: 'Invalid Transit',
+        amount: 100,
+        bankInstitutionNumber: '1',
+        bankTransitNumber: '1234567',
+        bankAccountNumber: '1',
+        cpaCode: CPA_CODES.Taxes
+      })
+
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch {
+        assert.ok(true)
+      }
+    })
+
+    it('Throws error when bankAccountNumber is invalid', () => {
+      const eftGenerator = new EFTGenerator(config)
+
+      eftGenerator.addDebitTransaction({
+        payeeName: 'Invalid Account',
+        amount: 100,
+        bankInstitutionNumber: '1',
+        bankTransitNumber: '1',
+        bankAccountNumber: 'abcd',
+        cpaCode: CPA_CODES.Taxes
+      })
+
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch {
+        assert.ok(true)
+      }
+    })
+
+    it('Warns when the payeeName is too long.', () => {
+      const eftGenerator = new EFTGenerator(config)
+
+      eftGenerator.addCreditTransaction({
+        payeeName: 'This payee name is too long and will be truncated to fit.',
+        amount: 100,
+        bankInstitutionNumber: '1',
+        bankTransitNumber: '1',
+        bankAccountNumber: '1',
+        cpaCode: CPA_CODES.Taxes
+      })
+
+      assert.ok(eftGenerator.validateCPA005())
+    })
+
+    it('Warns when the crossReferenceNumber is duplicated.', () => {
+      const eftGenerator = new EFTGenerator(config)
+
+      eftGenerator.addDebitTransaction({
+        payeeName: 'Same cross reference',
+        crossReferenceNumber: 'abc',
+        amount: 100,
+        bankInstitutionNumber: '1',
+        bankTransitNumber: '1',
+        bankAccountNumber: '1',
+        cpaCode: CPA_CODES.Taxes
+      })
+
+      eftGenerator.addDebitTransaction({
+        payeeName: 'Same cross reference',
+        crossReferenceNumber: 'abc',
+        amount: 100,
+        bankInstitutionNumber: '1',
+        bankTransitNumber: '1',
+        bankAccountNumber: '1',
+        cpaCode: CPA_CODES.Taxes
+      })
+
+      assert.ok(eftGenerator.validateCPA005())
+    })
   })
 })
