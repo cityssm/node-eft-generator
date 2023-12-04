@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "type": "module",
   "engines": {
-    "node": "^14.13.1 || >=16.0.0"
+    "node": ">=18.0.0"
   },
   "description": "Formats Electronic Funds Transfer (EFT) data into the CPA 005 standard.",
   "exports": "./index.js",
