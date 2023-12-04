@@ -13,6 +13,9 @@ function validateConfig(eftConfig) {
     if (!/^\d{1,4}$/.test(eftConfig.fileCreationNumber)) {
         throw new Error(`fileCreationNumber should be 1 to 4 digits: ${eftConfig.fileCreationNumber}`);
     }
+    if (!/^\d{0,5}$/.test(eftConfig.destinationDataCentre ?? '')) {
+        throw new Error(`destinationDataCentre should be 1 to 5 digits: ${eftConfig.destinationDataCentre}`);
+    }
     if (eftConfig.originatorShortName === undefined) {
         debug('originatorShortName not defined, using originatorLongName.');
         warningCount += 1;
