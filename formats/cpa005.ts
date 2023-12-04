@@ -13,6 +13,16 @@ function toJulianDate(date: Date): string {
 function validateConfig(eftConfig: EFTConfiguration): number {
   let warningCount = 0
 
+  if (eftConfig.originatorId.length > 10) {
+    throw new Error(`originatorId length exceeds 10: ${eftConfig.originatorId}`)
+  }
+
+  if (!/^\d{1,4}$/.test(eftConfig.fileCreationNumber)) {
+    throw new Error(
+      `fileCreationNumber should be 1 to 4 digits: ${eftConfig.fileCreationNumber}`
+    )
+  }
+
   if (eftConfig.originatorShortName === undefined) {
     debug('originatorShortName not defined, using originatorLongName.')
     warningCount += 1
@@ -36,15 +46,38 @@ function validateConfig(eftConfig: EFTConfiguration): number {
   return warningCount
 }
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function validateTransactions(eftTransactions: EFTTransaction[]): number {
   let warningCount = 0
 
+  if (eftTransactions.length === 0) {
+    debug('There are no transactions to include in the file.')
+    warningCount += 1
+  } else if (eftTransactions.length > 999_999_999) {
+    throw new Error('Transaction count exceeds 999,999,999.')
+  }
+
   const cpaCodeNumbers: number[] = Object.values(CPA_CODES)
+
+  const crossReferenceNumbers = new Set<string>()
 
   for (const transaction of eftTransactions) {
     if (transaction.segments.length === 0) {
       debug('Transaction record has no segments, will be ignored.')
       warningCount += 1
+    }
+
+    if (transaction.segments.length > 6) {
+      debug(
+        'Transaction record has more than 6 segments, we be split into multiple transactions.'
+      )
+      warningCount += 1
+    }
+
+    if (!['C', 'D'].includes(transaction.recordType)) {
+      throw new Error(
+        `Unknown recordType: ${transaction.recordType}`
+      )
     }
 
     for (const segment of transaction.segments) {
@@ -55,19 +88,47 @@ function validateTransactions(eftTransactions: EFTTransaction[]): number {
 
       if (segment.amount <= 0) {
         throw new Error(
-          `Segment amount less than or equal to zero: ${segment.amount}`
+          `Segment amount cannot be less than or equal to zero: ${segment.amount}`
         )
       }
 
       if (segment.amount >= 100_000_000) {
         throw new Error(
-          `Segment amount exceeds $100,000,000: ${segment.amount}`
+          `Segment amount cannot exceed $100,000,000: ${segment.amount}`
+        )
+      }
+
+      if (!/^\d{1,3}$/.test(segment.bankInstitutionNumber)) {
+        throw new Error(
+          `bankInstitutionNumber should be 1 to 3 digits: ${segment.bankInstitutionNumber}`
+        )
+      }
+
+      if (!/^\d{1,5}$/.test(segment.bankTransitNumber)) {
+        throw new Error(
+          `bankTransitNumber should be 1 to 5 digits: ${segment.bankTransitNumber}`
+        )
+      }
+
+      if (!/^\d{1,12}$/.test(segment.bankAccountNumber)) {
+        throw new Error(
+          `bankAccountNumber should be 1 to 12 digits: ${segment.bankAccountNumber}`
         )
       }
 
       if (segment.payeeName.length > 30) {
         debug(`payeeName will be truncated: ${segment.payeeName}`)
         warningCount += 1
+      }
+
+      if (segment.crossReferenceNumber !== undefined) {
+        if (crossReferenceNumbers.has(segment.crossReferenceNumber)) {
+          debug(
+            `crossReferenceNumber should be unique: ${segment.crossReferenceNumber}`
+          )
+          warningCount += 1
+        }
+        crossReferenceNumbers.add(segment.crossReferenceNumber)
       }
     }
   }

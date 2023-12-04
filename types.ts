@@ -63,6 +63,9 @@ export interface EFTTransactionSegment {
    */
   bankTransitNumber: string
 
+  /**
+   * Up to 12 digits
+   */
   bankAccountNumber: string
 
   payeeName: string
