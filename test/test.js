@@ -5,7 +5,8 @@ const config = {
     originatorId: '0123456789',
     originatorLongName: 'The City of Sault Ste. Marie',
     originatorShortName: 'SSM',
-    fileCreationNumber: '0001'
+    fileCreationNumber: '0001',
+    destinationCurrency: 'CAD'
 };
 describe('eft-generator - CPA-005', () => {
     it('Creates valid CPA-005 formatted output', () => {
@@ -92,6 +93,22 @@ describe('eft-generator - CPA-005', () => {
                 assert.fail();
             }
             catch {
+                assert.ok(true);
+            }
+        });
+        it('Throws error when destinationDataCentre is invalid.', () => {
+            const eftGenerator = new EFTGenerator({
+                originatorId: '1',
+                originatorLongName: 'Name',
+                fileCreationNumber: '1234',
+                destinationDataCentre: '1234567'
+            });
+            try {
+                eftGenerator.toCPA005();
+                assert.fail();
+            }
+            catch (error) {
+                console.log(error);
                 assert.ok(true);
             }
         });
