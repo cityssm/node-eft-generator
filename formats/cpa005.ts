@@ -43,6 +43,12 @@ function validateConfig(eftConfig: EFTConfiguration): number {
     warningCount += 1
   }
 
+  if (!['', 'CAD', 'USD'].includes(eftConfig.destinationCurrency ?? '')) {
+    throw new Error(
+      `Unsupported destinationCurrency: ${eftConfig.destinationCurrency}`
+    )
+  }
+
   return warningCount
 }
 
@@ -75,7 +81,7 @@ function validateTransactions(eftTransactions: EFTTransaction[]): number {
     }
 
     if (!['C', 'D'].includes(transaction.recordType)) {
-      throw new Error(`Unknown recordType: ${transaction.recordType}`)
+      throw new Error(`Unsupported recordType: ${transaction.recordType}`)
     }
 
     for (const segment of transaction.segments) {
