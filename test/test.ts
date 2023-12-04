@@ -9,7 +9,8 @@ const config: EFTConfiguration = {
   originatorLongName: 'The City of Sault Ste. Marie',
   originatorShortName: 'SSM',
   fileCreationNumber: '0001',
-  destinationCurrency: 'CAD'
+  destinationCurrency: 'CAD',
+  destinationDataCentre: '123'
 }
 
 describe('eft-generator - CPA-005', () => {
@@ -78,6 +79,12 @@ describe('eft-generator - CPA-005', () => {
 
     assert.ok(output.length > 0)
     assert.strictEqual(output.charAt(0), 'A')
+
+    const outputLines = output.split('\r\n')
+
+    for (const outputLine of outputLines) {
+      assert.strictEqual(outputLine.length, 1_464)
+    }
   })
 
   describe('Configuration errors and warnings', () => {
@@ -123,7 +130,22 @@ describe('eft-generator - CPA-005', () => {
         eftGenerator.toCPA005()
         assert.fail()
       } catch (error) {
-        console.log(error)
+        assert.ok(true)
+      }
+    })
+
+    it('Throws error when destinationCurrency is invalid.', () => {
+      const eftGenerator = new EFTGenerator({
+        originatorId: '1',
+        originatorLongName: 'Name',
+        fileCreationNumber: '1234',
+        destinationCurrency: 'AUD'
+      })
+
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch (error) {
         assert.ok(true)
       }
     })
@@ -141,6 +163,31 @@ describe('eft-generator - CPA-005', () => {
   })
 
   describe('Transaction errors and warnings', () => {
+    it('Throws error when recordType is unsupported', () => {
+      const eftGenerator = new EFTGenerator(config)
+
+      eftGenerator.addTransaction({
+        recordType: 'E',
+        segments: [
+          {
+            payeeName: 'Invalid Institution',
+            amount: 100,
+            bankInstitutionNumber: 'abc',
+            bankTransitNumber: '1',
+            bankAccountNumber: '1',
+            cpaCode: CPA_CODES.Taxes
+          }
+        ]
+      })
+
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch {
+        assert.ok(true)
+      }
+    })
+
     it('Warns when there are no segments on a transaction.', () => {
       const eftGenerator = new EFTGenerator(config)
 
@@ -150,6 +197,10 @@ describe('eft-generator - CPA-005', () => {
       })
 
       assert.ok(eftGenerator.validateCPA005())
+
+      const output = eftGenerator.toCPA005()
+
+      assert.ok(output.length > 0)
     })
 
     it('Warns when there are more than six segments on a transaction.', () => {
