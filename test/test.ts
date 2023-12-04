@@ -41,6 +41,30 @@ describe('eft-generator - CPA-005', () => {
 
     assert.strictEqual(eftGenerator.getTransactions().length, 1)
 
+    eftGenerator.addTransaction({
+      recordType: 'C',
+      segments: [
+        {
+          bankInstitutionNumber: '111',
+          bankTransitNumber: '22222',
+          bankAccountNumber: '333333333',
+          cpaCode: CPA_CODES.PropertyTaxes,
+          amount: 1234.56,
+          payeeName: 'Test Property Owner'
+        },
+        {
+          bankInstitutionNumber: '222',
+          bankTransitNumber: '33333',
+          bankAccountNumber: '4444444444',
+          cpaCode: CPA_CODES.PropertyTaxes,
+          amount: 2345.67,
+          payeeName: 'Test Property Owner 2'
+        }
+      ]
+    })
+
+    assert.strictEqual(eftGenerator.getTransactions().length, 2)
+
     try {
       assert.ok(eftGenerator.validateCPA005())
     } catch (error) {
@@ -99,6 +123,85 @@ describe('eft-generator - CPA-005', () => {
   })
 
   describe('Transaction errors and warnings', () => {
+    it('Warns when there are no segments on a transaction.', () => {
+      const eftGenerator = new EFTGenerator(config)
+
+      eftGenerator.addTransaction({
+        recordType: 'D',
+        segments: []
+      })
+
+      assert.ok(eftGenerator.validateCPA005())
+    })
+
+    it('Warns when there are more than six segments on a transaction.', () => {
+      const eftGenerator = new EFTGenerator(config)
+
+      eftGenerator.addTransaction({
+        recordType: 'D',
+        segments: [
+          {
+            bankInstitutionNumber: '111',
+            bankTransitNumber: '22222',
+            bankAccountNumber: '3333333',
+            cpaCode: CPA_CODES.PropertyTaxes,
+            amount: 100.01,
+            payeeName: 'Test Property Owner'
+          },
+          {
+            bankInstitutionNumber: '111',
+            bankTransitNumber: '22222',
+            bankAccountNumber: '3333333',
+            cpaCode: CPA_CODES.PropertyTaxes,
+            amount: 100.02,
+            payeeName: 'Test Property Owner'
+          },
+          {
+            bankInstitutionNumber: '111',
+            bankTransitNumber: '22222',
+            bankAccountNumber: '3333333',
+            cpaCode: CPA_CODES.PropertyTaxes,
+            amount: 100.03,
+            payeeName: 'Test Property Owner'
+          },
+          {
+            bankInstitutionNumber: '111',
+            bankTransitNumber: '22222',
+            bankAccountNumber: '3333333',
+            cpaCode: CPA_CODES.PropertyTaxes,
+            amount: 100.04,
+            payeeName: 'Test Property Owner'
+          },
+          {
+            bankInstitutionNumber: '111',
+            bankTransitNumber: '22222',
+            bankAccountNumber: '3333333',
+            cpaCode: CPA_CODES.PropertyTaxes,
+            amount: 100.05,
+            payeeName: 'Test Property Owner'
+          },
+          {
+            bankInstitutionNumber: '111',
+            bankTransitNumber: '22222',
+            bankAccountNumber: '3333333',
+            cpaCode: CPA_CODES.PropertyTaxes,
+            amount: 100.06,
+            payeeName: 'Test Property Owner'
+          },
+          {
+            bankInstitutionNumber: '111',
+            bankTransitNumber: '22222',
+            bankAccountNumber: '3333333',
+            cpaCode: CPA_CODES.PropertyTaxes,
+            amount: 100.07,
+            payeeName: 'Test Property Owner'
+          }
+        ]
+      })
+
+      assert.ok(eftGenerator.validateCPA005())
+    })
+
     it('Throws error when a transaction has a negative amount.', () => {
       const eftGenerator = new EFTGenerator(config)
 
