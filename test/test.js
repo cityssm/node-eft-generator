@@ -1,4 +1,4 @@
-import * as assert from 'node:assert';
+import assert from 'node:assert';
 import fs from 'node:fs';
 import { EFTGenerator, CPA_CODES } from '../index.js';
 const config = {
