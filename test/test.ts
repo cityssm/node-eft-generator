@@ -52,6 +52,36 @@ describe('eft-generator - CPA-005', () => {
     assert.strictEqual(output.charAt(0), 'A')
   })
 
+  it('Throws error when originatorId length is too long.', () => {
+    const eftGenerator = new EFTGenerator({
+      originatorId: '12345678901234567890',
+      originatorLongName: '',
+      fileCreationNumber: '0001'
+    })
+
+    try {
+      eftGenerator.toCPA005()
+      assert.fail()
+    } catch {
+      assert.ok(true)
+    }
+  })
+
+  it('Throws error when fileCreationNumber is invalid.', () => {
+    const eftGenerator = new EFTGenerator({
+      originatorId: '1',
+      originatorLongName: '',
+      fileCreationNumber: 'abcdefg'
+    })
+
+    try {
+      eftGenerator.toCPA005()
+      assert.fail()
+    } catch {
+      assert.ok(true)
+    }
+  })
+
   it('Warns on missing originatorShortName', () => {
     const eftGenerator = new EFTGenerator({
       originatorId: '01',

@@ -45,7 +45,7 @@ function validateTransactions(eftTransactions) {
             warningCount += 1;
         }
         if (transaction.segments.length > 6) {
-            debug('Transaction record has more than 6 segments, we be split into multiple transactions.');
+            debug('Transaction record has more than 6 segments, will be split into multiple transactions.');
             warningCount += 1;
         }
         if (!['C', 'D'].includes(transaction.recordType)) {
