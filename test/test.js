@@ -249,13 +249,7 @@ describe('eft-generator - CPA-005', () => {
                 bankAccountNumber: '1',
                 cpaCode: 1
             });
-            try {
-                eftGenerator.toCPA005();
-                assert.fail();
-            }
-            catch {
-                assert.ok(true);
-            }
+            assert.ok(!eftGenerator.validateCPA005());
         });
         it('Throws error when a transaction has too large of an amount', () => {
             const eftGenerator = new EFTGenerator(config);
