@@ -102,3 +102,4 @@ export declare const CPA_CODES: Readonly<{
     ProvincialHealthCarePremium: 609;
     OffencesAndFines: 610;
 }>;
+export declare function isValidCPACode(cpaCode: number): boolean;

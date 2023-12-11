@@ -6,8 +6,8 @@ import type {
 } from './types.js'
 
 export class EFTGenerator {
-  #config: EFTConfiguration
-  #transactions: EFTTransaction[]
+  readonly #config: EFTConfiguration
+  readonly #transactions: EFTTransaction[]
 
   constructor(config: EFTConfiguration) {
     this.#config = config
@@ -63,5 +63,5 @@ export class EFTGenerator {
   }
 }
 
-export { CPA_CODES } from './cpaCodes.js'
+export { CPA_CODES, isValidCPACode } from './cpaCodes.js'
 export type * as types from './types.js'

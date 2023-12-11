@@ -1,9 +1,9 @@
-import { toModernJulianDate } from '@cityssm/modern-julian-date';
+import { toShortModernJulianDate } from '@cityssm/modern-julian-date';
 import Debug from 'debug';
-import { CPA_CODES } from '../index.js';
+import { isValidCPACode } from '../index.js';
 const debug = Debug('eft-generator:cpa005');
 function toJulianDate(date) {
-    return '0' + toModernJulianDate(date).toString().slice(2);
+    return ('0' + toShortModernJulianDate(date));
 }
 function validateConfig(eftConfig) {
     let warningCount = 0;
@@ -43,7 +43,6 @@ function validateTransactions(eftTransactions) {
     else if (eftTransactions.length > 999999999) {
         throw new Error('Transaction count exceeds 999,999,999.');
     }
-    const cpaCodeNumbers = Object.values(CPA_CODES);
     const crossReferenceNumbers = new Set();
     for (const transaction of eftTransactions) {
         if (transaction.segments.length === 0) {
@@ -58,7 +57,7 @@ function validateTransactions(eftTransactions) {
             throw new Error(`Unsupported recordType: ${transaction.recordType}`);
         }
         for (const segment of transaction.segments) {
-            if (!cpaCodeNumbers.includes(segment.cpaCode)) {
+            if (!isValidCPACode(segment.cpaCode)) {
                 debug(`Unknown CPA code: ${segment.cpaCode}`);
                 warningCount += 1;
             }

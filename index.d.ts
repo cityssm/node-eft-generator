@@ -10,5 +10,5 @@ export declare class EFTGenerator {
     toCPA005(): string;
     validateCPA005(): boolean;
 }
-export { CPA_CODES } from './cpaCodes.js';
+export { CPA_CODES, isValidCPACode } from './cpaCodes.js';
 export type * as types from './types.js';

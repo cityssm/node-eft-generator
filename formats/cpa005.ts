@@ -1,13 +1,13 @@
-import { toModernJulianDate } from '@cityssm/modern-julian-date'
+import { toShortModernJulianDate } from '@cityssm/modern-julian-date'
 import Debug from 'debug'
 
-import { CPA_CODES, type EFTGenerator } from '../index.js'
+import { isValidCPACode, type EFTGenerator } from '../index.js'
 import type { EFTConfiguration, EFTTransaction } from '../types.js'
 
 const debug = Debug('eft-generator:cpa005')
 
-function toJulianDate(date: Date): string {
-  return '0' + toModernJulianDate(date).toString().slice(2)
+function toJulianDate(date: Date): `0${string}` {
+  return ('0' + toShortModernJulianDate(date)) as `0${string}`
 }
 
 function validateConfig(eftConfig: EFTConfiguration): number {
@@ -69,8 +69,6 @@ function validateTransactions(eftTransactions: EFTTransaction[]): number {
     throw new Error('Transaction count exceeds 999,999,999.')
   }
 
-  const cpaCodeNumbers: number[] = Object.values(CPA_CODES)
-
   const crossReferenceNumbers = new Set<string>()
 
   for (const transaction of eftTransactions) {
@@ -91,7 +89,7 @@ function validateTransactions(eftTransactions: EFTTransaction[]): number {
     }
 
     for (const segment of transaction.segments) {
-      if (!cpaCodeNumbers.includes(segment.cpaCode)) {
+      if (!isValidCPACode(segment.cpaCode)) {
         debug(`Unknown CPA code: ${segment.cpaCode}`)
         warningCount += 1
       }

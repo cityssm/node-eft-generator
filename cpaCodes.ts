@@ -102,3 +102,9 @@ export const CPA_CODES = Object.freeze({
   ProvincialHealthCarePremium: 609,
   OffencesAndFines: 610
 })
+
+const CPA_CODE_NUMBERS = new Set<number>(Object.values(CPA_CODES))
+
+export function isValidCPACode(cpaCode: number): boolean {
+  return CPA_CODE_NUMBERS.has(cpaCode)
+}

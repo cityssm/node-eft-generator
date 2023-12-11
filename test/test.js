@@ -112,7 +112,7 @@ describe('eft-generator - CPA-005', () => {
                 eftGenerator.toCPA005();
                 assert.fail();
             }
-            catch (error) {
+            catch {
                 assert.ok(true);
             }
         });
@@ -127,7 +127,7 @@ describe('eft-generator - CPA-005', () => {
                 eftGenerator.toCPA005();
                 assert.fail();
             }
-            catch (error) {
+            catch {
                 assert.ok(true);
             }
         });

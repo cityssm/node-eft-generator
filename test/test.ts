@@ -83,7 +83,7 @@ describe('eft-generator - CPA-005', () => {
     const outputLines = output.split('\r\n')
 
     for (const outputLine of outputLines) {
-      assert.strictEqual(outputLine.length, 1_464)
+      assert.strictEqual(outputLine.length, 1464)
     }
   })
 
@@ -129,7 +129,7 @@ describe('eft-generator - CPA-005', () => {
       try {
         eftGenerator.toCPA005()
         assert.fail()
-      } catch (error) {
+      } catch {
         assert.ok(true)
       }
     })
@@ -145,7 +145,7 @@ describe('eft-generator - CPA-005', () => {
       try {
         eftGenerator.toCPA005()
         assert.fail()
-      } catch (error) {
+      } catch {
         assert.ok(true)
       }
     })
