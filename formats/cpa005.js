@@ -41,7 +41,7 @@ function validateTransactions(eftTransactions) {
         debug('There are no transactions to include in the file.');
         warningCount += 1;
     }
-    else if (eftTransactions.length > 999999999) {
+    else if (eftTransactions.length > 999_999_999) {
         throw new Error('Transaction count exceeds 999,999,999.');
     }
     const crossReferenceNumbers = new Set();
@@ -65,7 +65,7 @@ function validateTransactions(eftTransactions) {
             if (segment.amount <= 0) {
                 throw new Error(`Segment amount cannot be less than or equal to zero: ${segment.amount}`);
             }
-            if (segment.amount >= 100000000) {
+            if (segment.amount >= 100_000_000) {
                 throw new Error(`Segment amount cannot exceed $100,000,000: ${segment.amount}`);
             }
             if (!/^\d{1,3}$/.test(segment.bankInstitutionNumber)) {
@@ -169,7 +169,7 @@ export function formatToCPA005(eftGenerator) {
                         .toString()
                         .padStart(10, '0') +
                     paymentJulianDate +
-                    ''.padEnd(1, ' ') +
+                    ''.padStart(1, '0') +
                     segment.bankInstitutionNumber.padStart(3, '0') +
                     segment.bankTransitNumber.padStart(5, '0') +
                     segment.bankAccountNumber.padEnd(12, ' ') +
@@ -209,7 +209,11 @@ export function formatToCPA005(eftGenerator) {
             .toString()
             .padStart(14, '0') +
         totalNumberCredits.toString().padStart(8, '0') +
-        ''.padEnd(1396, ' ');
+        '0'.padStart(14, '0') +
+        '0'.padStart(8, '0') +
+        '0'.padStart(14, '0') +
+        '0'.padStart(8, '0') +
+        ''.padEnd(1352, ' ');
     outputLines.push(trailer);
-    return outputLines.join('\r\n');
+    return outputLines.join(NEWLINE);
 }
