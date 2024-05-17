@@ -30,9 +30,9 @@
   "devDependencies": {
     "@types/debug": "^4.1.12",
     "@types/mocha": "^10.0.6",
-    "@types/node": "^20.10.4",
+    "@types/node": "^20.12.12",
     "cross-env": "^7.0.3",
-    "eslint-config-cityssm": "^1.2.0"
+    "eslint-config-cityssm": "^2.1.0"
   },
   "dependencies": {
     "@cityssm/modern-julian-date": "^1.0.0",
