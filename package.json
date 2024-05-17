@@ -8,8 +8,8 @@
   "description": "Formats Electronic Funds Transfer (EFT) data into the CPA 005 standard.",
   "exports": "./index.js",
   "scripts": {
-    "test": "cross-env NODE_ENV=dev DEBUG=eft-generator:* mocha",
-    "coverage": "cross-env NODE_ENV=dev DEBUG=eft-generator:* c8 mocha"
+    "test": "cross-env NODE_ENV=dev DEBUG=eft-generator:* node --test",
+    "coverage": "cross-env NODE_ENV=dev DEBUG=eft-generator:* c8 node --test"
   },
   "keywords": [
     "banking",
@@ -29,7 +29,6 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
-    "@types/mocha": "^10.0.6",
     "@types/node": "^20.12.12",
     "cross-env": "^7.0.3",
     "eslint-config-cityssm": "^2.1.0"

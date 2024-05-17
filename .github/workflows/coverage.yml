@@ -28,7 +28,7 @@ jobs:
       - name: Install Package
         run: |
           npm ci
-          npm install -g mocha c8
+          npm install -g c8
 
       - name: Code Climate (Before)
         if: ${{ github.event_name != 'pull_request' && env.CC_TEST_REPORTER_ID != '' && matrix.node == 20 }}
@@ -38,7 +38,7 @@ jobs:
           ./codeclimate-test-reporter before-build
       
       - name: Run Coverage Testing
-        run: c8 --reporter=lcov --reporter=text --reporter=text-summary mocha --timeout 60000 --exit
+        run: c8 --reporter=lcov --reporter=text --reporter=text-summary node --test
 
       - name: Code Climate (After)
         if: ${{ github.event_name != 'pull_request' && env.CC_TEST_REPORTER_ID != '' && matrix.node == 20 }}
