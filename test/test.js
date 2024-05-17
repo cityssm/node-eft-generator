@@ -1,6 +1,7 @@
 import assert from 'node:assert';
 import fs from 'node:fs';
 import { EFTGenerator, CPA_CODES } from '../index.js';
+import { NEWLINE as cpa005_newline } from '../formats/cpa005.js';
 const config = {
     originatorId: '0123456789',
     originatorLongName: 'The City of Sault Ste. Marie',
@@ -67,7 +68,7 @@ describe('eft-generator - CPA-005', () => {
         fs.writeFileSync('test/output/cpa005.txt', output);
         assert.ok(output.length > 0);
         assert.strictEqual(output.charAt(0), 'A');
-        const outputLines = output.split('\r\n');
+        const outputLines = output.split(cpa005_newline);
         for (const outputLine of outputLines) {
             assert.strictEqual(outputLine.length, 1464);
         }
@@ -255,7 +256,7 @@ describe('eft-generator - CPA-005', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addDebitTransaction({
                 payeeName: 'Large Amount',
-                amount: 999999999,
+                amount: 999_999_999,
                 bankInstitutionNumber: '1',
                 bankTransitNumber: '1',
                 bankAccountNumber: '1',

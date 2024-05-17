@@ -3,6 +3,7 @@ import fs from 'node:fs'
 
 import { EFTGenerator, CPA_CODES } from '../index.js'
 import type { EFTConfiguration } from '../types.js'
+import { NEWLINE as cpa005_newline } from '../formats/cpa005.js'
 
 const config: EFTConfiguration = {
   originatorId: '0123456789',
@@ -80,7 +81,7 @@ describe('eft-generator - CPA-005', () => {
     assert.ok(output.length > 0)
     assert.strictEqual(output.charAt(0), 'A')
 
-    const outputLines = output.split('\r\n')
+    const outputLines = output.split(cpa005_newline)
 
     for (const outputLine of outputLines) {
       assert.strictEqual(outputLine.length, 1464)

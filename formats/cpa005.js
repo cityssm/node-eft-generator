@@ -2,6 +2,7 @@ import { toShortModernJulianDate } from '@cityssm/modern-julian-date';
 import Debug from 'debug';
 import { isValidCPACode } from '../index.js';
 const debug = Debug('eft-generator:cpa005');
+export const NEWLINE = '\r\n';
 function toJulianDate(date) {
     return ('0' + toShortModernJulianDate(date));
 }

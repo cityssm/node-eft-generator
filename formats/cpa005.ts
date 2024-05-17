@@ -6,6 +6,8 @@ import type { EFTConfiguration, EFTTransaction } from '../types.js'
 
 const debug = Debug('eft-generator:cpa005')
 
+export const NEWLINE = '\r\n'
+
 function toJulianDate(date: Date): `0${string}` {
   return ('0' + toShortModernJulianDate(date)) as `0${string}`
 }
