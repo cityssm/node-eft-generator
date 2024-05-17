@@ -267,7 +267,7 @@ export function formatToCPA005(eftGenerator: EFTGenerator): string {
         eftConfig.originatorLongName.padEnd(30, ' ').slice(0, 30) +
         eftConfig.originatorId.padEnd(10, ' ') +
         crossReferenceNumber.padEnd(19, ' ').slice(0, 19) +
-        ''.padStart(1, '0') +
+        ''.padStart(9, '0') +
         ''.padEnd(12, ' ') +
         ''.padEnd(15, ' ') +
         ''.padEnd(22, ' ') +
