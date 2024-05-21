@@ -1,7 +1,8 @@
+import { isCPATransactionCode } from '@cityssm/cpa-codes'
 import { toShortModernJulianDate } from '@cityssm/modern-julian-date'
 import Debug from 'debug'
 
-import { isValidCPACode, type EFTGenerator } from '../index.js'
+import { type EFTGenerator } from '../index.js'
 import type { EFTConfiguration, EFTTransaction } from '../types.js'
 
 const debug = Debug('eft-generator:cpa005')
@@ -91,7 +92,7 @@ function validateTransactions(eftTransactions: EFTTransaction[]): number {
     }
 
     for (const segment of transaction.segments) {
-      if (!isValidCPACode(segment.cpaCode)) {
+      if (!isCPATransactionCode(segment.cpaCode)) {
         debug(`Unknown CPA code: ${segment.cpaCode}`)
         warningCount += 1
       }

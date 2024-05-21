@@ -41,7 +41,7 @@ export interface EFTTransaction {
 }
 
 export interface EFTTransactionSegment {
-  cpaCode: number
+  cpaCode: `${number}`
 
   /**
    * In dollars

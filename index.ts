@@ -63,5 +63,5 @@ export class EFTGenerator {
   }
 }
 
-export { CPA_CODES, isValidCPACode } from './cpaCodes.js'
+export { cpaTransactionCodes, isCPATransactionCode } from '@cityssm/cpa-codes'
 export type * as types from './types.js'

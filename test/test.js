@@ -1,8 +1,8 @@
 import assert from 'node:assert';
 import fs from 'node:fs';
-import { EFTGenerator, CPA_CODES } from '../index.js';
-import { NEWLINE as cpa005_newline } from '../formats/cpa005.js';
 import { describe, it } from 'node:test';
+import { NEWLINE as cpa005_newline } from '../formats/cpa005.js';
+import { EFTGenerator } from '../index.js';
 const config = {
     originatorId: '0123456789',
     originatorLongName: 'The City of Sault Ste. Marie',
@@ -11,6 +11,7 @@ const config = {
     destinationCurrency: 'CAD',
     destinationDataCentre: '123'
 };
+const cpaCodePropertyTaxes = '385';
 await describe('eft-generator - CPA-005', async () => {
     await it('Creates valid CPA-005 formatted output', async () => {
         const eftGenerator = new EFTGenerator(config);
@@ -22,7 +23,7 @@ await describe('eft-generator - CPA-005', async () => {
                     bankInstitutionNumber: '111',
                     bankTransitNumber: '22222',
                     bankAccountNumber: '333333333',
-                    cpaCode: CPA_CODES.PropertyTaxes,
+                    cpaCode: cpaCodePropertyTaxes,
                     amount: 1234.56,
                     payeeName: 'Test Property Owner'
                 },
@@ -30,7 +31,7 @@ await describe('eft-generator - CPA-005', async () => {
                     bankInstitutionNumber: '222',
                     bankTransitNumber: '33333',
                     bankAccountNumber: '4444444444',
-                    cpaCode: CPA_CODES.PropertyTaxes,
+                    cpaCode: cpaCodePropertyTaxes,
                     amount: 2345.67,
                     payeeName: 'Test Property Owner 2'
                 }
@@ -44,7 +45,7 @@ await describe('eft-generator - CPA-005', async () => {
                     bankInstitutionNumber: '111',
                     bankTransitNumber: '22222',
                     bankAccountNumber: '333333333',
-                    cpaCode: CPA_CODES.PropertyTaxes,
+                    cpaCode: cpaCodePropertyTaxes,
                     amount: 1234.56,
                     payeeName: 'Test Property Owner'
                 },
@@ -52,7 +53,7 @@ await describe('eft-generator - CPA-005', async () => {
                     bankInstitutionNumber: '222',
                     bankTransitNumber: '33333',
                     bankAccountNumber: '4444444444',
-                    cpaCode: CPA_CODES.PropertyTaxes,
+                    cpaCode: cpaCodePropertyTaxes,
                     amount: 2345.67,
                     payeeName: 'Test Property Owner 2'
                 }
@@ -154,7 +155,7 @@ await describe('eft-generator - CPA-005', async () => {
                         bankInstitutionNumber: 'abc',
                         bankTransitNumber: '1',
                         bankAccountNumber: '1',
-                        cpaCode: CPA_CODES.Taxes
+                        cpaCode: cpaCodePropertyTaxes
                     }
                 ]
             });
@@ -185,7 +186,7 @@ await describe('eft-generator - CPA-005', async () => {
                         bankInstitutionNumber: '111',
                         bankTransitNumber: '22222',
                         bankAccountNumber: '3333333',
-                        cpaCode: CPA_CODES.PropertyTaxes,
+                        cpaCode: cpaCodePropertyTaxes,
                         amount: 100.01,
                         payeeName: 'Test Property Owner'
                     },
@@ -193,7 +194,7 @@ await describe('eft-generator - CPA-005', async () => {
                         bankInstitutionNumber: '111',
                         bankTransitNumber: '22222',
                         bankAccountNumber: '3333333',
-                        cpaCode: CPA_CODES.PropertyTaxes,
+                        cpaCode: cpaCodePropertyTaxes,
                         amount: 100.02,
                         payeeName: 'Test Property Owner'
                     },
@@ -201,7 +202,7 @@ await describe('eft-generator - CPA-005', async () => {
                         bankInstitutionNumber: '111',
                         bankTransitNumber: '22222',
                         bankAccountNumber: '3333333',
-                        cpaCode: CPA_CODES.PropertyTaxes,
+                        cpaCode: cpaCodePropertyTaxes,
                         amount: 100.03,
                         payeeName: 'Test Property Owner'
                     },
@@ -209,7 +210,7 @@ await describe('eft-generator - CPA-005', async () => {
                         bankInstitutionNumber: '111',
                         bankTransitNumber: '22222',
                         bankAccountNumber: '3333333',
-                        cpaCode: CPA_CODES.PropertyTaxes,
+                        cpaCode: cpaCodePropertyTaxes,
                         amount: 100.04,
                         payeeName: 'Test Property Owner'
                     },
@@ -217,7 +218,7 @@ await describe('eft-generator - CPA-005', async () => {
                         bankInstitutionNumber: '111',
                         bankTransitNumber: '22222',
                         bankAccountNumber: '3333333',
-                        cpaCode: CPA_CODES.PropertyTaxes,
+                        cpaCode: cpaCodePropertyTaxes,
                         amount: 100.05,
                         payeeName: 'Test Property Owner'
                     },
@@ -225,7 +226,7 @@ await describe('eft-generator - CPA-005', async () => {
                         bankInstitutionNumber: '111',
                         bankTransitNumber: '22222',
                         bankAccountNumber: '3333333',
-                        cpaCode: CPA_CODES.PropertyTaxes,
+                        cpaCode: cpaCodePropertyTaxes,
                         amount: 100.06,
                         payeeName: 'Test Property Owner'
                     },
@@ -233,7 +234,7 @@ await describe('eft-generator - CPA-005', async () => {
                         bankInstitutionNumber: '111',
                         bankTransitNumber: '22222',
                         bankAccountNumber: '3333333',
-                        cpaCode: CPA_CODES.PropertyTaxes,
+                        cpaCode: cpaCodePropertyTaxes,
                         amount: 100.07,
                         payeeName: 'Test Property Owner'
                     }
@@ -249,7 +250,7 @@ await describe('eft-generator - CPA-005', async () => {
                 bankInstitutionNumber: '1',
                 bankTransitNumber: '1',
                 bankAccountNumber: '1',
-                cpaCode: 1
+                cpaCode: '1'
             });
             assert.ok(!eftGenerator.validateCPA005());
         });
@@ -261,7 +262,7 @@ await describe('eft-generator - CPA-005', async () => {
                 bankInstitutionNumber: '1',
                 bankTransitNumber: '1',
                 bankAccountNumber: '1',
-                cpaCode: CPA_CODES.Taxes
+                cpaCode: cpaCodePropertyTaxes
             });
             try {
                 eftGenerator.toCPA005();
@@ -279,7 +280,7 @@ await describe('eft-generator - CPA-005', async () => {
                 bankInstitutionNumber: 'abc',
                 bankTransitNumber: '1',
                 bankAccountNumber: '1',
-                cpaCode: CPA_CODES.Taxes
+                cpaCode: cpaCodePropertyTaxes
             });
             try {
                 eftGenerator.toCPA005();
@@ -297,7 +298,7 @@ await describe('eft-generator - CPA-005', async () => {
                 bankInstitutionNumber: '1',
                 bankTransitNumber: '1234567',
                 bankAccountNumber: '1',
-                cpaCode: CPA_CODES.Taxes
+                cpaCode: cpaCodePropertyTaxes
             });
             try {
                 eftGenerator.toCPA005();
@@ -307,7 +308,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        it('Throws error when bankAccountNumber is invalid', () => {
+        await it('Throws error when bankAccountNumber is invalid', async () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addDebitTransaction({
                 payeeName: 'Invalid Account',
@@ -315,7 +316,7 @@ await describe('eft-generator - CPA-005', async () => {
                 bankInstitutionNumber: '1',
                 bankTransitNumber: '1',
                 bankAccountNumber: 'abcd',
-                cpaCode: CPA_CODES.Taxes
+                cpaCode: cpaCodePropertyTaxes
             });
             try {
                 eftGenerator.toCPA005();
@@ -325,7 +326,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        it('Warns when the payeeName is too long.', () => {
+        await it('Warns when the payeeName is too long.', async () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addCreditTransaction({
                 payeeName: 'This payee name is too long and will be truncated to fit.',
@@ -333,11 +334,11 @@ await describe('eft-generator - CPA-005', async () => {
                 bankInstitutionNumber: '1',
                 bankTransitNumber: '1',
                 bankAccountNumber: '1',
-                cpaCode: CPA_CODES.Taxes
+                cpaCode: cpaCodePropertyTaxes
             });
             assert.ok(eftGenerator.validateCPA005());
         });
-        it('Warns when the crossReferenceNumber is duplicated.', () => {
+        await it('Warns when the crossReferenceNumber is duplicated.', async () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addDebitTransaction({
                 payeeName: 'Same cross reference',
@@ -346,7 +347,7 @@ await describe('eft-generator - CPA-005', async () => {
                 bankInstitutionNumber: '1',
                 bankTransitNumber: '1',
                 bankAccountNumber: '1',
-                cpaCode: CPA_CODES.Taxes
+                cpaCode: cpaCodePropertyTaxes
             });
             eftGenerator.addDebitTransaction({
                 payeeName: 'Same cross reference',
@@ -355,7 +356,7 @@ await describe('eft-generator - CPA-005', async () => {
                 bankInstitutionNumber: '1',
                 bankTransitNumber: '1',
                 bankAccountNumber: '1',
-                cpaCode: CPA_CODES.Taxes
+                cpaCode: cpaCodePropertyTaxes
             });
             assert.ok(eftGenerator.validateCPA005());
         });

@@ -1,6 +1,6 @@
 {
   "name": "@cityssm/eft-generator",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "engines": {
     "node": ">=18.0.0"
@@ -34,6 +34,7 @@
     "eslint-config-cityssm": "^2.1.0"
   },
   "dependencies": {
+    "@cityssm/cpa-codes": "^0.1.1",
     "@cityssm/modern-julian-date": "^1.0.0",
     "debug": "^4.3.4"
   }

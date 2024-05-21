@@ -12,7 +12,7 @@ export interface EFTTransaction {
     segments: EFTTransactionSegment[];
 }
 export interface EFTTransactionSegment {
-    cpaCode: number;
+    cpaCode: `${number}`;
     amount: number;
     paymentDate?: Date;
     bankInstitutionNumber: string;

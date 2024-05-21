@@ -1,6 +1,6 @@
+import { isCPATransactionCode } from '@cityssm/cpa-codes';
 import { toShortModernJulianDate } from '@cityssm/modern-julian-date';
 import Debug from 'debug';
-import { isValidCPACode } from '../index.js';
 const debug = Debug('eft-generator:cpa005');
 export const NEWLINE = '\r\n';
 function toJulianDate(date) {
@@ -58,7 +58,7 @@ function validateTransactions(eftTransactions) {
             throw new Error(`Unsupported recordType: ${transaction.recordType}`);
         }
         for (const segment of transaction.segments) {
-            if (!isValidCPACode(segment.cpaCode)) {
+            if (!isCPATransactionCode(segment.cpaCode)) {
                 debug(`Unknown CPA code: ${segment.cpaCode}`);
                 warningCount += 1;
             }
