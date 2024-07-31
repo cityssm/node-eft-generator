@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.0.1",
     "cross-env": "^7.0.3",
     "eslint-config-cityssm": "^5.0.2",
     "prettier-config-cityssm": "^1.0.0"
