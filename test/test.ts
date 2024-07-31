@@ -146,12 +146,7 @@ await describe('eft-generator - CPA-005', async () => {
         destinationCurrency: 'AUD'
       })
 
-      try {
-        eftGenerator.toCPA005()
-        assert.fail()
-      } catch {
-        assert.ok(true)
-      }
+      assert(!eftGenerator.validateCPA005())
     })
 
     await it('Warns on missing originatorShortName', () => {
