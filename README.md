@@ -46,3 +46,8 @@ fs.writeFileSync('cpa005.txt', output)
 
 - [Canadian Payments Association Standard 005](https://www.payments.ca/sites/default/files/standard005eng.pdf)
 - [Royal Bank CPA-005 Reference](https://www.rbcroyalbank.com/ach/file-451771.pdf)
+
+## Related Projects
+
+[CPA Codes for Node](https://github.com/cityssm/node-cpa-codes)<br />
+Lookups, validations, and utility functions for Canadian Payments Association (CPA) Standard 007 transaction and return codes.
