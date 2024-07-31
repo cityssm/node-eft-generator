@@ -2,7 +2,7 @@ import assert from 'node:assert'
 import fs from 'node:fs'
 import { describe, it } from 'node:test'
 
-import { NEWLINE as cpa005_newline } from '../formats/cpa005.js'
+import { NEWLINE as cpa005_newline, validateCPA005 } from '../formats/cpa005.js'
 import { EFTGenerator } from '../index.js'
 import type { EFTConfiguration } from '../types.js'
 
@@ -162,7 +162,11 @@ await describe('eft-generator - CPA-005', async () => {
         fileCreationNumber: '0001'
       })
 
-      assert.ok(eftGenerator.validateCPA005())
+      assert(
+        validateCPA005(eftGenerator).some((validationWarning) => {
+          return validationWarning.warningField === 'originatorLongName'
+        })
+      )
     })
   })
 
@@ -200,7 +204,13 @@ await describe('eft-generator - CPA-005', async () => {
         segments: []
       })
 
-      assert.ok(eftGenerator.validateCPA005())
+      const validationWarnings = validateCPA005(eftGenerator)
+
+      assert(
+        validationWarnings.some((validationWarning) => {
+          return validationWarning.warningField === 'segments'
+        })
+      )
 
       const output = eftGenerator.toCPA005()
 
@@ -272,7 +282,17 @@ await describe('eft-generator - CPA-005', async () => {
         ]
       })
 
-      assert.ok(eftGenerator.validateCPA005())
+      const validationWarnings = validateCPA005(eftGenerator)
+
+      assert(
+        validationWarnings.some((validationWarning) => {
+          return validationWarning.warningField === 'segments'
+        })
+      )
+
+      const output = eftGenerator.toCPA005()
+
+      assert.ok(output.length > 0)
     })
 
     await it('Throws error when a transaction has a negative amount.', () => {
@@ -287,7 +307,12 @@ await describe('eft-generator - CPA-005', async () => {
         cpaCode: '1'
       })
 
-      assert.ok(!eftGenerator.validateCPA005())
+      try {
+        eftGenerator.toCPA005()
+        assert.fail()
+      } catch {
+        assert.ok(true)
+      }
     })
 
     await it('Throws error when a transaction has too large of an amount', () => {
@@ -382,7 +407,11 @@ await describe('eft-generator - CPA-005', async () => {
         cpaCode: cpaCodePropertyTaxes
       })
 
-      assert.ok(eftGenerator.validateCPA005())
+      assert(
+        validateCPA005(eftGenerator).some((validationWarning) => {
+          return validationWarning.warningField === 'payeeName'
+        })
+      )
     })
 
     await it('Warns when the crossReferenceNumber is duplicated.', () => {
@@ -408,7 +437,11 @@ await describe('eft-generator - CPA-005', async () => {
         cpaCode: cpaCodePropertyTaxes
       })
 
-      assert.ok(eftGenerator.validateCPA005())
+      assert(
+        validateCPA005(eftGenerator).some((validationWarning) => {
+          return validationWarning.warningField === 'crossReferenceNumber'
+        })
+      )
     })
   })
 })

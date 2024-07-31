@@ -2,8 +2,12 @@ import { isCPATransactionCode } from '@cityssm/cpa-codes'
 import { toShortModernJulianDate } from '@cityssm/modern-julian-date'
 import Debug from 'debug'
 
-import { type EFTGenerator } from '../index.js'
-import type { EFTConfiguration, EFTTransaction } from '../types.js'
+import type { EFTGenerator } from '../index.js'
+import type {
+  EFTConfiguration,
+  EFTTransaction,
+  ValidationWarning
+} from '../types.js'
 
 const debug = Debug('eft-generator:cpa005')
 
@@ -13,8 +17,8 @@ function toJulianDate(date: Date): `0${string}` {
   return ('0' + toShortModernJulianDate(date)) as `0${string}`
 }
 
-function validateConfig(eftConfig: EFTConfiguration): number {
-  let warningCount = 0
+function validateConfig(eftConfig: EFTConfiguration): ValidationWarning[] {
+  const validationWarnings: ValidationWarning[] = []
 
   if (eftConfig.originatorId.length > 10) {
     throw new Error(`originatorId length exceeds 10: ${eftConfig.originatorId}`)
@@ -33,23 +37,26 @@ function validateConfig(eftConfig: EFTConfiguration): number {
   }
 
   if (eftConfig.originatorShortName === undefined) {
-    debug('originatorShortName not defined, using originatorLongName.')
-    warningCount += 1
+    validationWarnings.push({
+      warningField: 'originatorShortName',
+      warning: 'originatorShortName not defined, using originatorLongName.'
+    })
+
     eftConfig.originatorShortName = eftConfig.originatorLongName
   }
 
   if (eftConfig.originatorShortName.length > 15) {
-    debug(
-      `originatorShortName will be truncated: ${eftConfig.originatorShortName}`
-    )
-    warningCount += 1
+    validationWarnings.push({
+      warningField: 'originatorShortName',
+      warning: `originatorShortName will be truncated to 15 characters: ${eftConfig.originatorShortName}`
+    })
   }
 
   if (eftConfig.originatorLongName.length > 30) {
-    debug(
-      `originatorLongName will be truncated: ${eftConfig.originatorLongName}`
-    )
-    warningCount += 1
+    validationWarnings.push({
+      warningField: 'originatorLongName',
+      warning: `originatorLongName will be truncated to 30 characters: ${eftConfig.originatorLongName}`
+    })
   }
 
   if (!['', 'CAD', 'USD'].includes(eftConfig.destinationCurrency ?? '')) {
@@ -58,52 +65,64 @@ function validateConfig(eftConfig: EFTConfiguration): number {
     )
   }
 
-  return warningCount
+  return validationWarnings
 }
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-function validateTransactions(eftTransactions: EFTTransaction[]): number {
-  let warningCount = 0
+function validateTransactions(
+  eftTransactions: EFTTransaction[]
+): ValidationWarning[] {
+  const validationWarnings: ValidationWarning[] = []
 
   if (eftTransactions.length === 0) {
-    debug('There are no transactions to include in the file.')
-    warningCount += 1
+    validationWarnings.push({
+      warningField: 'transactions',
+      warning: 'There are no transactions to include in the file.'
+    })
   } else if (eftTransactions.length > 999_999_999) {
     throw new Error('Transaction count exceeds 999,999,999.')
   }
 
   const crossReferenceNumbers = new Set<string>()
 
-  for (const transaction of eftTransactions) {
+  for (const [transactionIndex, transaction] of eftTransactions.entries()) {
     if (transaction.segments.length === 0) {
-      debug('Transaction record has no segments, will be ignored.')
-      warningCount += 1
-    }
-
-    if (transaction.segments.length > 6) {
-      debug(
-        'Transaction record has more than 6 segments, will be split into multiple transactions.'
-      )
-      warningCount += 1
+      validationWarnings.push({
+        transactionIndex,
+        warningField: 'segments',
+        warning: 'Transaction record has no segments, will be ignored.'
+      })
+    } else if (transaction.segments.length > 6) {
+      validationWarnings.push({
+        transactionIndex,
+        warningField: 'segments',
+        warning:
+          'Transaction record has more than 6 segments, will be split into multiple transactions.'
+      })
     }
 
     if (!['C', 'D'].includes(transaction.recordType)) {
       throw new Error(`Unsupported recordType: ${transaction.recordType}`)
     }
 
-    for (const segment of transaction.segments) {
+    for (const [
+      transactionSegmentIndex,
+      segment
+    ] of transaction.segments.entries()) {
       if (!isCPATransactionCode(segment.cpaCode)) {
-        debug(`Unknown CPA code: ${segment.cpaCode}`)
-        warningCount += 1
+        validationWarnings.push({
+          transactionIndex,
+          transactionSegmentIndex,
+          warningField: 'cpaCode',
+          warning: `Unknown CPA code: ${segment.cpaCode}`
+        })
       }
 
       if (segment.amount <= 0) {
         throw new Error(
           `Segment amount cannot be less than or equal to zero: ${segment.amount}`
         )
-      }
-
-      if (segment.amount >= 100_000_000) {
+      } else if (segment.amount >= 100_000_000) {
         throw new Error(
           `Segment amount cannot exceed $100,000,000: ${segment.amount}`
         )
@@ -128,30 +147,41 @@ function validateTransactions(eftTransactions: EFTTransaction[]): number {
       }
 
       if (segment.payeeName.length > 30) {
-        debug(`payeeName will be truncated: ${segment.payeeName}`)
-        warningCount += 1
+        validationWarnings.push({
+          transactionIndex,
+          transactionSegmentIndex,
+          warningField: 'payeeName',
+          warning: `payeeName will be truncated to 30 characters: ${segment.payeeName}`
+        })
       }
 
       if (segment.crossReferenceNumber !== undefined) {
         if (crossReferenceNumbers.has(segment.crossReferenceNumber)) {
-          debug(
-            `crossReferenceNumber should be unique: ${segment.crossReferenceNumber}`
-          )
-          warningCount += 1
+          validationWarnings.push({
+            transactionIndex,
+            transactionSegmentIndex,
+            warningField: 'crossReferenceNumber',
+            warning: `crossReferenceNumber should be unique: ${segment.crossReferenceNumber}`
+          })
         }
         crossReferenceNumbers.add(segment.crossReferenceNumber)
       }
     }
   }
 
-  return warningCount
+  return validationWarnings
 }
 
-export function validateCPA005(eftGenerator: EFTGenerator): number {
-  return (
-    validateConfig(eftGenerator.getConfiguration()) +
-    validateTransactions(eftGenerator.getTransactions())
+export function validateCPA005(
+  eftGenerator: EFTGenerator
+): ValidationWarning[] {
+  const validationWarnings = validateConfig(eftGenerator.getConfiguration())
+  
+  validationWarnings.push(
+    ...validateTransactions(eftGenerator.getTransactions())
   )
+
+  return validationWarnings
 }
 
 function formatHeader(eftConfig: EFTConfiguration): string {
@@ -192,10 +222,11 @@ function formatHeader(eftConfig: EFTConfiguration): string {
 }
 
 export function formatToCPA005(eftGenerator: EFTGenerator): string {
-  const warningCount = validateCPA005(eftGenerator)
+  const validationWarnings = validateCPA005(eftGenerator)
 
-  if (warningCount > 0) {
-    debug(`Proceeding with ${warningCount} warnings.`)
+  if (validationWarnings.length > 0) {
+    debug(`Proceeding with ${validationWarnings.length} warnings.`)
+    debug(validationWarnings)
   }
 
   const eftConfig = eftGenerator.getConfiguration()

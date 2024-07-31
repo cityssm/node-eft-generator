@@ -72,3 +72,20 @@ export interface EFTTransactionSegment {
 
   crossReferenceNumber?: string
 }
+
+export type ValidationWarning = {
+  warning: string
+} & (
+  | {
+      warningField: keyof EFTConfiguration | 'transactions'
+    }
+  | {
+      transactionIndex: number
+      warningField: keyof EFTTransaction
+    }
+  | {
+      transactionIndex: number
+      transactionSegmentIndex: number
+      warningField: keyof EFTTransactionSegment
+    }
+)
