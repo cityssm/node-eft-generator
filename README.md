@@ -19,7 +19,7 @@ npm install @cityssm/eft-generator
 
 ```javascript
 import fs from 'node:fs'
-import { EFTGenerator, CPA_CODES } from '@cityssm/eft-generator'
+import { EFTGenerator } from '@cityssm/eft-generator'
 
 const eftGenerator = new EFTGenerator({
   originatorId: '0123456789',
@@ -32,7 +32,7 @@ eftGenerator.addDebitTransaction({
   bankInstitutionNumber: '111',
   bankTransitNumber: '22222',
   bankAccountNumber: '333333333',
-  cpaCode: CPA_CODES.PropertyTaxes,
+  cpaCode: 385, // Property Taxes
   amount: 1234.56,
   payeeName: 'Test Property Owner'
 })
