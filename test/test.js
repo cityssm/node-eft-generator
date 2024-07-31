@@ -135,7 +135,7 @@ await describe('eft-generator - CPA-005', async () => {
                 fileCreationNumber: '0001'
             });
             assert(validateCPA005(eftGenerator).some((validationWarning) => {
-                return validationWarning.warningField === 'originatorLongName';
+                return validationWarning.warningField === 'originatorShortName';
             }));
         });
     });
