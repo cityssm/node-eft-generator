@@ -13,7 +13,7 @@ const config = {
 };
 const cpaCodePropertyTaxes = '385';
 await describe('eft-generator - CPA-005', async () => {
-    await it('Creates valid CPA-005 formatted output', async () => {
+    await it('Creates valid CPA-005 formatted output', () => {
         const eftGenerator = new EFTGenerator(config);
         assert.strictEqual(eftGenerator.getTransactions().length, 0);
         eftGenerator.addTransaction({
@@ -76,7 +76,7 @@ await describe('eft-generator - CPA-005', async () => {
         }
     });
     await describe('Configuration errors and warnings', async () => {
-        await it('Throws error when originatorId length is too long.', async () => {
+        await it('Throws error when originatorId length is too long.', () => {
             const eftGenerator = new EFTGenerator({
                 originatorId: '12345678901234567890',
                 originatorLongName: '',
@@ -90,7 +90,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        await it('Throws error when fileCreationNumber is invalid.', async () => {
+        await it('Throws error when fileCreationNumber is invalid.', () => {
             const eftGenerator = new EFTGenerator({
                 originatorId: '1',
                 originatorLongName: '',
@@ -104,7 +104,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        await it('Throws error when destinationDataCentre is invalid.', async () => {
+        await it('Throws error when destinationDataCentre is invalid.', () => {
             const eftGenerator = new EFTGenerator({
                 originatorId: '1',
                 originatorLongName: 'Name',
@@ -119,7 +119,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        await it('Throws error when destinationCurrency is invalid.', async () => {
+        await it('Throws error when destinationCurrency is invalid.', () => {
             const eftGenerator = new EFTGenerator({
                 originatorId: '1',
                 originatorLongName: 'Name',
@@ -134,7 +134,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        await it('Warns on missing originatorShortName', async () => {
+        await it('Warns on missing originatorShortName', () => {
             const eftGenerator = new EFTGenerator({
                 originatorId: '01',
                 originatorLongName: 'This name exceeds the 30 character limit and will be truncated.',
@@ -144,7 +144,7 @@ await describe('eft-generator - CPA-005', async () => {
         });
     });
     await describe('Transaction errors and warnings', async () => {
-        await it('Throws error when recordType is unsupported', async () => {
+        await it('Throws error when recordType is unsupported', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addTransaction({
                 recordType: 'E',
@@ -167,7 +167,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        await it('Warns when there are no segments on a transaction.', async () => {
+        await it('Warns when there are no segments on a transaction.', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addTransaction({
                 recordType: 'D',
@@ -177,7 +177,7 @@ await describe('eft-generator - CPA-005', async () => {
             const output = eftGenerator.toCPA005();
             assert.ok(output.length > 0);
         });
-        await it('Warns when there are more than six segments on a transaction.', async () => {
+        await it('Warns when there are more than six segments on a transaction.', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addTransaction({
                 recordType: 'D',
@@ -242,7 +242,7 @@ await describe('eft-generator - CPA-005', async () => {
             });
             assert.ok(eftGenerator.validateCPA005());
         });
-        await it('Throws error when a transaction has a negative amount.', async () => {
+        await it('Throws error when a transaction has a negative amount.', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addDebitTransaction({
                 payeeName: 'Negative Amount',
@@ -254,7 +254,7 @@ await describe('eft-generator - CPA-005', async () => {
             });
             assert.ok(!eftGenerator.validateCPA005());
         });
-        await it('Throws error when a transaction has too large of an amount', async () => {
+        await it('Throws error when a transaction has too large of an amount', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addDebitTransaction({
                 payeeName: 'Large Amount',
@@ -272,7 +272,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        await it('Throws error when bankInstitutionNumber is invalid', async () => {
+        await it('Throws error when bankInstitutionNumber is invalid', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addDebitTransaction({
                 payeeName: 'Invalid Institution',
@@ -290,7 +290,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        await it('Throws error when bankTransitNumber is invalid', async () => {
+        await it('Throws error when bankTransitNumber is invalid', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addDebitTransaction({
                 payeeName: 'Invalid Transit',
@@ -308,7 +308,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        await it('Throws error when bankAccountNumber is invalid', async () => {
+        await it('Throws error when bankAccountNumber is invalid', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addDebitTransaction({
                 payeeName: 'Invalid Account',
@@ -326,7 +326,7 @@ await describe('eft-generator - CPA-005', async () => {
                 assert.ok(true);
             }
         });
-        await it('Warns when the payeeName is too long.', async () => {
+        await it('Warns when the payeeName is too long.', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addCreditTransaction({
                 payeeName: 'This payee name is too long and will be truncated to fit.',
@@ -338,7 +338,7 @@ await describe('eft-generator - CPA-005', async () => {
             });
             assert.ok(eftGenerator.validateCPA005());
         });
-        await it('Warns when the crossReferenceNumber is duplicated.', async () => {
+        await it('Warns when the crossReferenceNumber is duplicated.', () => {
             const eftGenerator = new EFTGenerator(config);
             eftGenerator.addDebitTransaction({
                 payeeName: 'Same cross reference',
