@@ -50,7 +50,7 @@ export class EFTGenerator {
   }
 
   /**
-   * Checks if the current configuration and transactions can be processed into the CPA-005 format successfully.
+   * Checks if the current configuration and transactions can be processed into the CPA-005 format.
    * @returns `true` if there will be no fatal errors.
    */
   validateCPA005(): boolean {
