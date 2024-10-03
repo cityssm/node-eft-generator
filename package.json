@@ -29,14 +29,14 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.12",
-    "@types/node": "^22.5.2",
+    "@types/node": "^22.7.4",
     "cross-env": "^7.0.3",
-    "eslint-config-cityssm": "^7.0.0",
+    "eslint-config-cityssm": "^10.1.1",
     "prettier-config-cityssm": "^1.0.0"
   },
   "dependencies": {
     "@cityssm/cpa-codes": "^0.1.1",
     "@cityssm/modern-julian-date": "^1.0.1",
-    "debug": "^4.3.6"
+    "debug": "^4.3.7"
   }
 }
