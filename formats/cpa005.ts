@@ -65,6 +65,38 @@ function validateConfig(eftConfig: EFTConfiguration): ValidationWarning[] {
     )
   }
 
+  let returnAccountUndefinedCount = 0
+
+  if (eftConfig.returnInstitutionNumber === undefined) {
+    returnAccountUndefinedCount += 1
+  } else if (!/^\d{1,3}$/.test(eftConfig.returnInstitutionNumber)) {
+    throw new Error(
+      `returnInstitutionNumber should be 1 to 3 digits: ${eftConfig.returnInstitutionNumber}`
+    )
+  }
+
+  if (eftConfig.returnTransitNumber === undefined) {
+    returnAccountUndefinedCount += 1
+  } else if (!/^\d{1,5}$/.test(eftConfig.returnTransitNumber)) {
+    throw new Error(
+      `returnTransitNumber should be 1 to 3 digits: ${eftConfig.returnTransitNumber}`
+    )
+  }
+
+  if (eftConfig.returnAccountNumber === undefined) {
+    returnAccountUndefinedCount += 1
+  } else if (!/^\d{1,12}$/.test(eftConfig.returnAccountNumber)) {
+    throw new Error(
+      `returnAccountNumber should be 1 to 3 digits: ${eftConfig.returnAccountNumber}`
+    )
+  }
+
+  if (returnAccountUndefinedCount > 0 && returnAccountUndefinedCount < 3) {
+    throw new Error(
+      `returnInstitutionNumber, returnTransitNumber, and returnAccountNumber must by defined together, or not defined at all.`
+    )
+  }
+
   return validationWarnings
 }
 
@@ -176,7 +208,7 @@ export function validateCPA005(
   eftGenerator: EFTGenerator
 ): ValidationWarning[] {
   const validationWarnings = validateConfig(eftGenerator.getConfiguration())
-  
+
   validationWarnings.push(
     ...validateTransactions(eftGenerator.getTransactions())
   )
@@ -327,9 +359,17 @@ export function formatToCPA005(eftGenerator: EFTGenerator): string {
         // Originator's Cross Reference Number
         crossReferenceNumber.padEnd(19, ' ').slice(0, 19) +
         // Institutional ID Number for Returns
-        ''.padStart(9, '0') +
+        ''.padStart(1, '0') +
+        // Institution Number for Returns
+        (eftConfig.returnInstitutionNumber === undefined
+          ? ''.padEnd(3, ' ')
+          : eftConfig.returnInstitutionNumber.padStart(3, '0')) +
+        // Transit Number for Returns
+        (eftConfig.returnTransitNumber === undefined
+          ? ''.padEnd(5, ' ')
+          : eftConfig.returnTransitNumber.padStart(5, '0')) +
         // Account Number for Returns
-        ''.padEnd(12, ' ') +
+        (eftConfig.returnAccountNumber ?? '').padEnd(12, ' ') +
         // Originator's Sundry Information
         ''.padEnd(15, ' ') +
         // Filler

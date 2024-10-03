@@ -12,7 +12,11 @@ const config: EFTConfiguration = {
   originatorShortName: 'SSM',
   fileCreationNumber: '0001',
   destinationCurrency: 'CAD',
-  destinationDataCentre: '123'
+  destinationDataCentre: '123',
+
+  returnInstitutionNumber: '111',
+  returnTransitNumber: '22222',
+  returnAccountNumber: '333333333333'
 }
 
 const cpaCodePropertyTaxes = '385'

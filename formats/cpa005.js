@@ -39,6 +39,28 @@ function validateConfig(eftConfig) {
     if (!['', 'CAD', 'USD'].includes(eftConfig.destinationCurrency ?? '')) {
         throw new Error(`Unsupported destinationCurrency: ${eftConfig.destinationCurrency}`);
     }
+    let returnAccountUndefinedCount = 0;
+    if (eftConfig.returnInstitutionNumber === undefined) {
+        returnAccountUndefinedCount += 1;
+    }
+    else if (!/^\d{1,3}$/.test(eftConfig.returnInstitutionNumber)) {
+        throw new Error(`returnInstitutionNumber should be 1 to 3 digits: ${eftConfig.returnInstitutionNumber}`);
+    }
+    if (eftConfig.returnTransitNumber === undefined) {
+        returnAccountUndefinedCount += 1;
+    }
+    else if (!/^\d{1,5}$/.test(eftConfig.returnTransitNumber)) {
+        throw new Error(`returnTransitNumber should be 1 to 3 digits: ${eftConfig.returnTransitNumber}`);
+    }
+    if (eftConfig.returnAccountNumber === undefined) {
+        returnAccountUndefinedCount += 1;
+    }
+    else if (!/^\d{1,12}$/.test(eftConfig.returnAccountNumber)) {
+        throw new Error(`returnAccountNumber should be 1 to 3 digits: ${eftConfig.returnAccountNumber}`);
+    }
+    if (returnAccountUndefinedCount > 0 && returnAccountUndefinedCount < 3) {
+        throw new Error(`returnInstitutionNumber, returnTransitNumber, and returnAccountNumber must by defined together, or not defined at all.`);
+    }
     return validationWarnings;
 }
 function validateTransactions(eftTransactions) {
@@ -208,8 +230,14 @@ export function formatToCPA005(eftGenerator) {
                     eftConfig.originatorLongName.padEnd(30, ' ').slice(0, 30) +
                     eftConfig.originatorId.padEnd(10, ' ') +
                     crossReferenceNumber.padEnd(19, ' ').slice(0, 19) +
-                    ''.padStart(9, '0') +
-                    ''.padEnd(12, ' ') +
+                    ''.padStart(1, '0') +
+                    (eftConfig.returnInstitutionNumber === undefined
+                        ? ''.padEnd(3, ' ')
+                        : eftConfig.returnInstitutionNumber.padStart(3, '0')) +
+                    (eftConfig.returnTransitNumber === undefined
+                        ? ''.padEnd(5, ' ')
+                        : eftConfig.returnTransitNumber.padStart(5, '0')) +
+                    (eftConfig.returnAccountNumber ?? '').padEnd(12, ' ') +
                     ''.padEnd(15, ' ') +
                     ''.padEnd(22, ' ') +
                     ''.padEnd(2, ' ') +
