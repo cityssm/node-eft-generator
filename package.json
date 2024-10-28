@@ -35,7 +35,7 @@
     "prettier-config-cityssm": "^1.0.0"
   },
   "dependencies": {
-    "@cityssm/cpa-codes": "^0.1.1",
+    "@cityssm/cpa-codes": "^1.0.0",
     "@cityssm/modern-julian-date": "^1.0.1",
     "debug": "^4.3.7"
   }
