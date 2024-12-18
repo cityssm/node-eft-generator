@@ -63,6 +63,7 @@ function validateConfig(eftConfig) {
     }
     return validationWarnings;
 }
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function validateTransactions(eftTransactions) {
     const validationWarnings = [];
     if (eftTransactions.length === 0) {
@@ -155,14 +156,24 @@ function formatHeader(eftConfig) {
     if (eftConfig.destinationCurrency !== undefined) {
         destinationCurrency = eftConfig.destinationCurrency;
     }
-    return ('A' +
+    return (
+    // Logical Record Type Id
+    'A' +
+        // Logical Record Count
         '1'.padStart(9, '0') +
+        // Originator's Id / Client Number
         eftConfig.originatorId.padEnd(10, ' ') +
+        // File Creation Number
         eftConfig.fileCreationNumber.padStart(4, '0').slice(-4) +
+        // Creation Date (0YYDDD)
         fileCreationJulianDate +
+        // Destination Data Centre
         dataCentre +
+        // Reserved Customer Direct Clearer Communication Area
         ''.padEnd(20, ' ') +
+        // Currency Code Identifier
         destinationCurrency +
+        // Filler
         ''.padEnd(1406, ' '));
 }
 export function formatToCPA005(eftGenerator) {
@@ -195,8 +206,11 @@ export function formatToCPA005(eftGenerator) {
                     totalNumberDebits += 1;
                 }
                 record =
+                    // Logical Record Type Id
                     transaction.recordType +
+                        // Logical Record Count
                         recordCount.toString().padStart(9, '0') +
+                        // Origination Control Data
                         eftConfig.originatorId.padEnd(10, ' ') +
                         eftConfig.fileCreationNumber.padStart(4, '0');
             }
@@ -214,33 +228,56 @@ export function formatToCPA005(eftGenerator) {
             }
             const originatorShortName = eftConfig.originatorShortName ?? eftConfig.originatorLongName;
             record +=
+                // Transaction Type
                 segment.cpaCode.toString() +
+                    // Amount
                     Math.round(segment.amount * 100)
                         .toString()
                         .padStart(10, '0') +
+                    // Credit: Date Funds to be Available
+                    // Debit: Due Date
                     paymentJulianDate +
+                    // Institutional Identification Number (9 digits)
                     ''.padStart(1, '0') +
                     segment.bankInstitutionNumber.padStart(3, '0') +
                     segment.bankTransitNumber.padStart(5, '0') +
+                    // Credit: Payee Account Number
+                    // Debit: Payor Account Number
                     segment.bankAccountNumber.padEnd(12, ' ') +
+                    // Item Trace Number
                     ''.padStart(22, '0') +
+                    // Stored Transaction Type
                     ''.padStart(3, '0') +
+                    // Originator's Short Name
                     originatorShortName.padEnd(15, ' ').slice(0, 15) +
+                    // Credit: Payee Name
+                    // Debit: Payor Name
                     segment.payeeName.padEnd(30, ' ').slice(0, 30) +
+                    // Originator's Long Name
                     eftConfig.originatorLongName.padEnd(30, ' ').slice(0, 30) +
+                    // Originating Direct Clearer's User's Id
                     eftConfig.originatorId.padEnd(10, ' ') +
+                    // Originator's Cross Reference Number
                     crossReferenceNumber.padEnd(19, ' ').slice(0, 19) +
+                    // Institutional ID Number for Returns
                     ''.padStart(1, '0') +
+                    // Institution Number for Returns
                     (eftConfig.returnInstitutionNumber === undefined
                         ? ''.padEnd(3, ' ')
                         : eftConfig.returnInstitutionNumber.padStart(3, '0')) +
+                    // Transit Number for Returns
                     (eftConfig.returnTransitNumber === undefined
                         ? ''.padEnd(5, ' ')
                         : eftConfig.returnTransitNumber.padStart(5, '0')) +
+                    // Account Number for Returns
                     (eftConfig.returnAccountNumber ?? '').padEnd(12, ' ') +
+                    // Originator's Sundry Information
                     ''.padEnd(15, ' ') +
+                    // Filler
                     ''.padEnd(22, ' ') +
+                    // Originator-Direct Clearer Settlement Code
                     ''.padEnd(2, ' ') +
+                    // Invalid Data Element Id
                     ''.padStart(11, '0');
             if (transaction.recordType === 'C') {
                 totalValueCredits += segment.amount;
@@ -253,22 +290,35 @@ export function formatToCPA005(eftGenerator) {
             outputLines.push(record.padEnd(1464, ' '));
         }
     }
-    const trailer = 'Z' +
+    const trailer = 
+    // Logical Record Type Id
+    'Z' +
+        // Logical Record Count
         (recordCount + 1).toString().padStart(9, '0') +
+        // Origination Control Data
         eftConfig.originatorId.padEnd(10, ' ') +
         eftConfig.fileCreationNumber.padStart(4, '0').slice(-4) +
+        // Total Value of Debit Transactions
         Math.round(totalValueDebits * 100)
             .toString()
             .padStart(14, '0') +
+        // Total Number of Debit Transactions
         totalNumberDebits.toString().padStart(8, '0') +
+        // Total Value of Credit Transactions
         Math.round(totalValueCredits * 100)
             .toString()
             .padStart(14, '0') +
+        // Total Number of Credit Transactions
         totalNumberCredits.toString().padStart(8, '0') +
+        // Total Value of Error Corrections "E"
         '0'.padStart(14, '0') +
+        // Total Number of Error Corrections "E"
         '0'.padStart(8, '0') +
+        // Total Value of Error Corrections "F"
         '0'.padStart(14, '0') +
+        // Total Number of Error Corrections "F"
         '0'.padStart(8, '0') +
+        // Filler
         ''.padEnd(1352, ' ');
     outputLines.push(trailer);
     return outputLines.join(NEWLINE);
