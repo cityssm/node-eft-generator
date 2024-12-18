@@ -59,7 +59,7 @@ function validateConfig(eftConfig) {
         throw new Error(`returnAccountNumber should be 1 to 3 digits: ${eftConfig.returnAccountNumber}`);
     }
     if (returnAccountUndefinedCount > 0 && returnAccountUndefinedCount < 3) {
-        throw new Error(`returnInstitutionNumber, returnTransitNumber, and returnAccountNumber must by defined together, or not defined at all.`);
+        throw new Error('returnInstitutionNumber, returnTransitNumber, and returnAccountNumber must by defined together, or not defined at all.');
     }
     return validationWarnings;
 }

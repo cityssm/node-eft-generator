@@ -93,7 +93,7 @@ function validateConfig(eftConfig: EFTConfiguration): ValidationWarning[] {
 
   if (returnAccountUndefinedCount > 0 && returnAccountUndefinedCount < 3) {
     throw new Error(
-      `returnInstitutionNumber, returnTransitNumber, and returnAccountNumber must by defined together, or not defined at all.`
+      'returnInstitutionNumber, returnTransitNumber, and returnAccountNumber must by defined together, or not defined at all.'
     )
   }
 
