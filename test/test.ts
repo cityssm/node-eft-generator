@@ -1,6 +1,3 @@
-// eslint-disable-next-line @eslint-community/eslint-comments/disable-enable-pair
-/* eslint-disable @typescript-eslint/no-magic-numbers */
-
 import assert from 'node:assert'
 import fs from 'node:fs'
 import { describe, it } from 'node:test'
