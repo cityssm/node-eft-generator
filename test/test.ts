@@ -206,9 +206,9 @@ await describe('eft-generator - CPA-005', async () => {
       const validationWarnings = validateCPA005(eftGenerator)
 
       assert(
-        validationWarnings.some((validationWarning) => {
-          return validationWarning.warningField === 'segments'
-        })
+        validationWarnings.some(
+          (validationWarning) => validationWarning.warningField === 'segments'
+        )
       )
 
       const output = eftGenerator.toCPA005()
@@ -284,9 +284,9 @@ await describe('eft-generator - CPA-005', async () => {
       const validationWarnings = validateCPA005(eftGenerator)
 
       assert(
-        validationWarnings.some((validationWarning) => {
-          return validationWarning.warningField === 'segments'
-        })
+        validationWarnings.some(
+          (validationWarning) => validationWarning.warningField === 'segments'
+        )
       )
 
       const output = eftGenerator.toCPA005()
@@ -407,9 +407,9 @@ await describe('eft-generator - CPA-005', async () => {
       })
 
       assert(
-        validateCPA005(eftGenerator).some((validationWarning) => {
-          return validationWarning.warningField === 'payeeName'
-        })
+        validateCPA005(eftGenerator).some(
+          (validationWarning) => validationWarning.warningField === 'payeeName'
+        )
       )
     })
 
@@ -437,9 +437,10 @@ await describe('eft-generator - CPA-005', async () => {
       })
 
       assert(
-        validateCPA005(eftGenerator).some((validationWarning) => {
-          return validationWarning.warningField === 'crossReferenceNumber'
-        })
+        validateCPA005(eftGenerator).some(
+          (validationWarning) =>
+            validationWarning.warningField === 'crossReferenceNumber'
+        )
       )
     })
   })

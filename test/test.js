@@ -173,9 +173,7 @@ await describe('eft-generator - CPA-005', async () => {
                 segments: []
             });
             const validationWarnings = validateCPA005(eftGenerator);
-            assert(validationWarnings.some((validationWarning) => {
-                return validationWarning.warningField === 'segments';
-            }));
+            assert(validationWarnings.some((validationWarning) => validationWarning.warningField === 'segments'));
             const output = eftGenerator.toCPA005();
             assert.ok(output.length > 0);
         });
@@ -243,9 +241,7 @@ await describe('eft-generator - CPA-005', async () => {
                 ]
             });
             const validationWarnings = validateCPA005(eftGenerator);
-            assert(validationWarnings.some((validationWarning) => {
-                return validationWarning.warningField === 'segments';
-            }));
+            assert(validationWarnings.some((validationWarning) => validationWarning.warningField === 'segments'));
             const output = eftGenerator.toCPA005();
             assert.ok(output.length > 0);
         });
@@ -349,9 +345,7 @@ await describe('eft-generator - CPA-005', async () => {
                 bankAccountNumber: '1',
                 cpaCode: cpaCodePropertyTaxes
             });
-            assert(validateCPA005(eftGenerator).some((validationWarning) => {
-                return validationWarning.warningField === 'payeeName';
-            }));
+            assert(validateCPA005(eftGenerator).some((validationWarning) => validationWarning.warningField === 'payeeName'));
         });
         await it('Warns when the crossReferenceNumber is duplicated.', () => {
             const eftGenerator = new EFTGenerator(config);
@@ -373,9 +367,7 @@ await describe('eft-generator - CPA-005', async () => {
                 bankAccountNumber: '1',
                 cpaCode: cpaCodePropertyTaxes
             });
-            assert(validateCPA005(eftGenerator).some((validationWarning) => {
-                return validationWarning.warningField === 'crossReferenceNumber';
-            }));
+            assert(validateCPA005(eftGenerator).some((validationWarning) => validationWarning.warningField === 'crossReferenceNumber'));
         });
     });
 });
