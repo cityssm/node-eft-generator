@@ -9,6 +9,8 @@ Formats Electronic Funds Transfer (EFT) data into the CPA 005 standard.
 Supports credit (C) and debit (D) record types.
 Other logical record types are not supported.
 
+✔️ Output parsed successfully by Scotiabank.
+
 ## Installation
 
 ```sh
