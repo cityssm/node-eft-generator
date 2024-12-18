@@ -1,5 +1,6 @@
 # EFT Generator for Node
 
+[![NPM Version](https://img.shields.io/npm/v/%40cityssm%2Feft-generator)](https://www.npmjs.com/package/@cityssm/eft-generator)
 [![Maintainability](https://api.codeclimate.com/v1/badges/b0fcaa947fb6dee89832/maintainability)](https://codeclimate.com/github/cityssm/node-eft-generator/maintainability)
 [![DeepSource](https://app.deepsource.com/gh/cityssm/node-eft-generator.svg/?label=active+issues&show_trend=true&token=cznyFIk-aMahhJdonnA8yjqZ)](https://app.deepsource.com/gh/cityssm/node-eft-generator/?ref=repository-badge)
 [![codecov](https://codecov.io/gh/cityssm/node-eft-generator/graph/badge.svg?token=JLS2JHUC4O)](https://codecov.io/gh/cityssm/node-eft-generator)
