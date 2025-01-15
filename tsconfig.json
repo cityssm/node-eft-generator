@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2022",
+    "target": "ES2022",
     "module": "Node16",
     "moduleResolution": "Node16",
     "isolatedModules": false,
@@ -8,7 +8,6 @@
     "noImplicitAny": false,
     "allowUnreachableCode": false,
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "strictNullChecks": true

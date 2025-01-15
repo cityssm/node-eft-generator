@@ -2,9 +2,14 @@ import assert from 'node:assert'
 import fs from 'node:fs'
 import { describe, it } from 'node:test'
 
+import Debug from 'debug'
+
+import { DEBUG_ENABLE_NAMESPACES } from '../debug.config.js'
 import { NEWLINE as cpa005_newline, validateCPA005 } from '../formats/cpa005.js'
 import { EFTGenerator } from '../index.js'
 import type { EFTConfiguration } from '../types.js'
+
+Debug.enable(DEBUG_ENABLE_NAMESPACES)
 
 const config: EFTConfiguration = {
   originatorId: '0123456789',

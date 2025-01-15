@@ -2,6 +2,7 @@ import { isCPATransactionCode } from '@cityssm/cpa-codes'
 import { toShortModernJulianDate } from '@cityssm/modern-julian-date'
 import Debug from 'debug'
 
+import { DEBUG_NAMESPACE } from '../debug.config.js'
 import type { EFTGenerator } from '../index.js'
 import type {
   EFTConfiguration,
@@ -9,7 +10,7 @@ import type {
   ValidationWarning
 } from '../types.js'
 
-const debug = Debug('eft-generator:cpa005')
+const debug = Debug(`${DEBUG_NAMESPACE}:cpa005`)
 
 export const NEWLINE = '\r\n'
 

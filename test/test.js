@@ -1,8 +1,11 @@
 import assert from 'node:assert';
 import fs from 'node:fs';
 import { describe, it } from 'node:test';
+import Debug from 'debug';
+import { DEBUG_ENABLE_NAMESPACES } from '../debug.config.js';
 import { NEWLINE as cpa005_newline, validateCPA005 } from '../formats/cpa005.js';
 import { EFTGenerator } from '../index.js';
+Debug.enable(DEBUG_ENABLE_NAMESPACES);
 const config = {
     originatorId: '0123456789',
     originatorLongName: 'The City of Sault Ste. Marie',

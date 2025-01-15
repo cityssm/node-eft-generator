@@ -1,7 +1,8 @@
 import { isCPATransactionCode } from '@cityssm/cpa-codes';
 import { toShortModernJulianDate } from '@cityssm/modern-julian-date';
 import Debug from 'debug';
-const debug = Debug('eft-generator:cpa005');
+import { DEBUG_NAMESPACE } from '../debug.config.js';
+const debug = Debug(`${DEBUG_NAMESPACE}:cpa005`);
 export const NEWLINE = '\r\n';
 function toJulianDate(date) {
     return ('0' + toShortModernJulianDate(date));
