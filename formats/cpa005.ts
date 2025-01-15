@@ -14,7 +14,7 @@ const debug = Debug(`${DEBUG_NAMESPACE}:cpa005`)
 
 export const NEWLINE = '\r\n'
 
-function toJulianDate(date: Date): `0${string}` {
+function toPaddedJulianDate(date: Date): `0${string}` {
   return ('0' + toShortModernJulianDate(date)) as `0${string}`
 }
 
@@ -218,7 +218,7 @@ export function validateCPA005(
 }
 
 function formatHeader(eftConfig: EFTConfiguration): string {
-  const fileCreationJulianDate = toJulianDate(
+  const fileCreationJulianDate = toPaddedJulianDate(
     eftConfig.fileCreationDate ?? new Date()
   )
 
@@ -310,7 +310,9 @@ export function formatToCPA005(eftGenerator: EFTGenerator): string {
 
       const segment = transaction.segments[segmentIndex]
 
-      const paymentJulianDate = toJulianDate(segment.paymentDate ?? new Date())
+      const paymentJulianDate = toPaddedJulianDate(
+        segment.paymentDate ?? new Date()
+      )
 
       let crossReferenceNumber = segment.crossReferenceNumber
 

@@ -4,7 +4,7 @@ import Debug from 'debug';
 import { DEBUG_NAMESPACE } from '../debug.config.js';
 const debug = Debug(`${DEBUG_NAMESPACE}:cpa005`);
 export const NEWLINE = '\r\n';
-function toJulianDate(date) {
+function toPaddedJulianDate(date) {
     return ('0' + toShortModernJulianDate(date));
 }
 function validateConfig(eftConfig) {
@@ -148,7 +148,7 @@ export function validateCPA005(eftGenerator) {
     return validationWarnings;
 }
 function formatHeader(eftConfig) {
-    const fileCreationJulianDate = toJulianDate(eftConfig.fileCreationDate ?? new Date());
+    const fileCreationJulianDate = toPaddedJulianDate(eftConfig.fileCreationDate ?? new Date());
     let dataCentre = ''.padEnd(5, ' ');
     if (eftConfig.destinationDataCentre !== undefined) {
         dataCentre = eftConfig.destinationDataCentre.padStart(5, '0');
@@ -216,7 +216,7 @@ export function formatToCPA005(eftGenerator) {
                         eftConfig.fileCreationNumber.padStart(4, '0');
             }
             const segment = transaction.segments[segmentIndex];
-            const paymentJulianDate = toJulianDate(segment.paymentDate ?? new Date());
+            const paymentJulianDate = toPaddedJulianDate(segment.paymentDate ?? new Date());
             let crossReferenceNumber = segment.crossReferenceNumber;
             if (crossReferenceNumber === undefined) {
                 crossReferenceNumber =
