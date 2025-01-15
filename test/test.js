@@ -140,9 +140,7 @@ await describe('eft-generator - CPA-005', async () => {
                 originatorLongName: 'This name exceeds the 30 character limit and will be truncated.',
                 fileCreationNumber: '0001'
             });
-            assert(validateCPA005(eftGenerator).some((validationWarning) => {
-                return validationWarning.warningField === 'originatorShortName';
-            }));
+            assert(validateCPA005(eftGenerator).some((validationWarning) => validationWarning.warningField === 'originatorShortName'));
         });
     });
     await describe('Transaction errors and warnings', async () => {

@@ -167,9 +167,10 @@ await describe('eft-generator - CPA-005', async () => {
       })
 
       assert(
-        validateCPA005(eftGenerator).some((validationWarning) => {
-          return validationWarning.warningField === 'originatorShortName'
-        })
+        validateCPA005(eftGenerator).some(
+          (validationWarning) =>
+            validationWarning.warningField === 'originatorShortName'
+        )
       )
     })
   })
